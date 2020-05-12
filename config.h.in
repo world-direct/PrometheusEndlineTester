@@ -1,0 +1,11 @@
+#ifndef INCLUDE_GUARD
+#define INCLUDE_GUARD
+
+constexpr const char* PROJECT_NAME = "@PROJECT_NAME@";
+constexpr const char* PROJECT_VER = "@PROJECT_VERSION@";
+constexpr const char* PROJECT_VER_MAJOR = "@PROJECT_VERSION_MAJOR@";
+constexpr const char* PROJECT_VER_MINOR = "@PROJECT_VERSION_MINOR@";
+constexpr const char* PROJECT_VER_PATCH = "@PROJECT_VERSION_PATCH@";
+constexpr const char* SETT_FILE_NAME = "@SETTINGS_FILE_NAME@";
+
+#endif // INCLUDE_GUARD

@@ -13,6 +13,13 @@ class PrometheusEndlineTesterMainWindow : public QMainWindow
 
 public:
   PrometheusEndlineTesterMainWindow(QWidget *parent = nullptr);
+  PrometheusEndlineTesterMainWindow ( const  PrometheusEndlineTesterMainWindow& ) = delete;
+  PrometheusEndlineTesterMainWindow ( const  PrometheusEndlineTesterMainWindow&& ) = delete;
+
+  PrometheusEndlineTesterMainWindow&  operator= ( const  PrometheusEndlineTesterMainWindow& ) = delete;
+  PrometheusEndlineTesterMainWindow&  operator= ( const  PrometheusEndlineTesterMainWindow&& ) = delete;
+
+
   ~PrometheusEndlineTesterMainWindow();
 
 private:
