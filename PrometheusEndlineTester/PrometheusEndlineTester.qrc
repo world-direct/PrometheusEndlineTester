@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>ce_mark.svg</file>
+        <file>WEEE_mark.svg</file>
+    </qresource>
+</RCC>

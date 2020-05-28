@@ -1,0 +1,88 @@
+#ifndef MBEDHOSTTESTRUNNER_H
+#define MBEDHOSTTESTRUNNER_H
+
+#include<QSerialPort>
+#include<QString>
+#include<QByteArray>
+
+
+namespace worlddirect {
+
+
+  class MbedHostTestRunner : public QSerialPort
+  {
+    Q_OBJECT
+  public:
+    explicit MbedHostTestRunner(QObject *parent = Q_NULLPTR);
+    MbedHostTestRunner&  operator= ( const  MbedHostTestRunner& ) = delete;
+    MbedHostTestRunner&  operator= ( const  MbedHostTestRunner&& ) = delete;
+
+    MbedHostTestRunner ( const  MbedHostTestRunner& ) = delete;
+    MbedHostTestRunner ( const  MbedHostTestRunner&& ) = delete;
+
+    virtual ~MbedHostTestRunner();
+
+  signals:
+    void serialOpened();
+    void printData(const QByteArray& dt);
+    void newLineReceived(const QByteArray &dt);
+    void kvReceived(const QByteArray& key, const QList<QByteArray>& val);
+    void msgReceived(const QByteArray& msg);
+
+    void setupReceived();
+    void endReceived(bool success);
+    void exitReceived(int code);
+    void syncReceived(const QUuid &uuid);
+
+    void timeoutReceived(int sek);
+    void hostTestNameReceived(const QString& hostTestName);
+    void hostTestVersionReceived(const QString& version);
+    void testCaseCountReceived(int cnt);
+    void testCaseSummaryReceived(int passed, int failed);
+
+    void testCaseNameReceived(const QString& testCaseName);
+    void testCaseStartReeived(const QString& testCaseName);
+    void testCaseFinishReceived(const QString& testCaseName, int passed, int failed);
+
+    void newHostTestRun(const QString& hostTestRun);
+    void newHostTest(const QString& hostTestRun, const QString& hostTest);
+    void newTestCase(const QString& hostTestRun, const QString& hostTest, const QString& hostTestCase);
+
+
+  public slots:
+    void openSerial();
+    void serialSendSync();
+
+  private slots:
+    void readSerialData();
+    void parseNewLine(const QByteArray &dt);
+
+  private:
+    qint64 sendKv(const QByteArray &key, const QByteArray &val);
+    qint64 sendString(const QByteArray& str);
+    qint64 sendSync(const QUuid &uuid);
+    qint64 sendSync(const QByteArray &uuid);
+
+    void parseMsg(const QByteArray& line);
+    void parseKv(const QByteArray& line);
+    void checkForWellKnownKv(const QByteArray& key, const QList<QByteArray>& val);
+
+    void newSyncReceived(const QUuid &uuid);
+    void newHostTestReceived(const QString& hostTestName);
+    void newTestCaseReceived(const QString& testCaseName);
+
+  private:
+    qint64 writePreamble();
+    qint64 writeString(const QByteArray &str);
+    qint64 writeSeperator();
+    qint64 writePostamble();
+
+  private:
+    QString m_testRun;
+    QString m_hostTest;
+
+  };
+
+}
+
+#endif // MBEDHOSTTESTRUNNER_H
