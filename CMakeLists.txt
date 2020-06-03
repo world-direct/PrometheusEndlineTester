@@ -8,17 +8,29 @@ project(PrometheusEndlineTester
 set(SETTINGS_FILE_NAME ${PROJECT_NAME})
 string(APPEND SETTINGS_FILE_NAME ".ini")
 
+set(STYLESHEET_FILE_NAME ${PROJECT_NAME})
+string(APPEND STYLESHEET_FILE_NAME ".qss")
+
 configure_file(config.h.in config.h @ONLY)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 include("common_compile_flags.cmake")
 
 #########################################
-## SubProjects
-add_subdirectory(PrometheusEndlineTesterLib)
+## QR-Code-generator
+add_library(QRCodeGenerator
+    QR-Code-generator/cpp/QrCode.cpp
+    )
+
+target_include_directories(QRCodeGenerator
+    SYSTEM
+    PUBLIC QR-Code-generator/cpp
+    )
 #########################################
 
+include("strict_compile_flags.cmake")
+
 #########################################
-## SubProjects
+## PrometheusEndlineTester
 add_subdirectory(PrometheusEndlineTester)
 #########################################

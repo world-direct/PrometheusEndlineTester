@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/PrometheusEndlineTester">
+        <file>images/ce_mark.svg</file>
+        <file>images/WEEE_mark.svg</file>
+        <file>unicode/ballot_x.svg</file>
+        <file>unicode/black_rightpointing_small_triangle.svg</file>
+        <file>unicode/check_mark.svg</file>
+        <file>unicode/stopwatch.svg</file>
+        <file>unicode/white_hourglass.svg</file>
+    </qresource>
+</RCC>
