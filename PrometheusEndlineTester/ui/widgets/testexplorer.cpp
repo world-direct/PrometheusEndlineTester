@@ -2,10 +2,11 @@
 
 #include <QBoxLayout>
 #include <QLabel>
-#include <QStandardItemModel>
 #include <QTreeView>
 
 #include "nameplatewidget.h"
+
+#include <ui/model/testcasesumarymodel.h>
 
 namespace worlddirect {
 
@@ -48,6 +49,7 @@ namespace worlddirect {
     m_testCaseSumary->setObjectName("testCaseSumary");
     m_layout->addWidget(m_testCaseSumary);
 
+    m_testCases->setModel(new TestCaseSumaryModel());
     m_layout->addWidget(m_testCases);
 
     this->setLayout(m_layout);
@@ -55,67 +57,93 @@ namespace worlddirect {
 
   void TestExplorer::newHostTestRun(const QString &hostTestRun)
   {
-    auto old_model = dynamic_cast<QStandardItemModel*>(m_testCases->model());
-    auto new_model = new QStandardItemModel();
-    m_testCases->setModel(new_model);
-    if(old_model != Q_NULLPTR){
-        delete  old_model;
-      }
-    auto htrun = new QStandardItem(hostTestRun);
-    new_model->appendRow(htrun);
+    auto model = dynamic_cast<TestCaseSumaryModel*>(m_testCases->model());
+    model ->newHostTestRun(hostTestRun);
     m_testCases->expandAll();
   }
 
   void TestExplorer::newHostTest(const QString &hostTestRun, const QString &hostTest)
   {
-    QStandardItem* htrun = findorCreateHtRun(hostTestRun);
-    htrun->appendRow(new QStandardItem(hostTest));
+    auto model = dynamic_cast<TestCaseSumaryModel*>(m_testCases->model());
+    model->newHostTest(hostTestRun,hostTest);
     m_testCases->expandAll();
   }
 
   void TestExplorer::newTestCase(const QString &hostTestRun, const QString &hostTest, const QString &hostTestCase)
   {
-    QStandardItem* hosttest = findorCreateHostTest(hostTestRun, hostTest);
-    hosttest->appendRow(new QStandardItem(hostTestCase));
+    auto model = dynamic_cast<TestCaseSumaryModel*>(m_testCases->model());
+    model->newTestCase(hostTestRun, hostTest, hostTestCase);
     m_testCases->expandAll();
   }
 
-  QStandardItem *TestExplorer::findorCreateHtRun(const QString &hostTestRun)
+  void TestExplorer::startTestCase(const QString &hostTestRun, const QString &hostTest, const QString &hostTestCase)
   {
-    auto model = dynamic_cast<QStandardItemModel*>(m_testCases->model());
-    auto items = model->findItems(hostTestRun);
-
-    QStandardItem* htrun = Q_NULLPTR;
-    if(items.isEmpty()){
-        htrun = new QStandardItem(hostTestRun);
-        model->appendRow(htrun);
-      }else{
-        htrun = items.first();
-      }
-    return htrun;
+    m_testCaseSumary->setStyleSheet("QLabel { background-color : yellow; color : yellow; }");
+    auto model = dynamic_cast<TestCaseSumaryModel*>(m_testCases->model());
+    model->startTestCase(hostTestRun, hostTest, hostTestCase);
   }
 
-  // sorry for the ugly code
-  QStandardItem *TestExplorer::findorCreateHostTest(const QString &hostTestRun, const QString &hostTest)
+  void TestExplorer::passedTestCase(const QString &hostTestRun, const QString &hostTest, const QString &hostTestCase)
   {
-    QStandardItem* htrun = findorCreateHtRun(hostTestRun);
+    auto model = dynamic_cast<TestCaseSumaryModel*>(m_testCases->model());
+    model->passedTestCase(hostTestRun, hostTest, hostTestCase);
+  }
 
-    QStandardItem* hosttest = Q_NULLPTR;
-    for(auto i = 0; i<htrun->rowCount(); i++){
-        auto child = htrun->child(i);
-        if(child->text() == hostTest){
-            hosttest = child;
-            break;
-          }
-      }
+  void TestExplorer::failedTestCase(const QString &hostTestRun, const QString &hostTest, const QString &hostTestCase)
+  {
+    auto model = dynamic_cast<TestCaseSumaryModel*>(m_testCases->model());
+    model->failedTestCase(hostTestRun, hostTest, hostTestCase);
+  }
 
-    if(hosttest == Q_NULLPTR){
-        hosttest = new QStandardItem(hostTest);
-        htrun->appendRow(hosttest);
-      }
+  void TestExplorer::passedHostTest(const QString &hostTestRun, const QString &hostTest)
+  {
+    auto model = dynamic_cast<TestCaseSumaryModel*>(m_testCases->model());
+    model->passedHostTest(hostTestRun, hostTest);
+  }
 
-    return hosttest;
+  void TestExplorer::failedHostTest(const QString &hostTestRun, const QString &hostTest)
+  {
+    auto model = dynamic_cast<TestCaseSumaryModel*>(m_testCases->model());
+    model->failedHostTest(hostTestRun, hostTest);
+  }
 
+  void TestExplorer::passedHostTestRun(const QString &hostTestRun)
+  {
+    m_testCaseSumary->setStyleSheet("QLabel { background-color : green; color : green; }");
+    auto model = dynamic_cast<TestCaseSumaryModel*>(m_testCases->model());
+    model->passedHostTestRun(hostTestRun);
+  }
+
+  void TestExplorer::failedHostTestRun(const QString &hostTestRun)
+  {
+    m_testCaseSumary->setStyleSheet("QLabel { background-color : red; color : red; }");
+    auto model = dynamic_cast<TestCaseSumaryModel*>(m_testCases->model());
+    model->failedHostTestRun(hostTestRun);
+  }
+
+  void TestExplorer::typeReceived(const QString &type)
+  {
+    m_namePlate->setType(type);
+  }
+
+  void TestExplorer::hardwareVersionReceived(const QString &hwVer)
+  {
+    m_namePlate->setHardwareVersion(hwVer);
+  }
+
+  void TestExplorer::endpointNameReceived(const QString &epName)
+  {
+    m_namePlate->setEndpointName(epName);
+  }
+
+  void TestExplorer::iccIdReceived(const QString &iccId)
+  {
+    m_namePlate->setIccId(iccId);
+  }
+
+  void TestExplorer::printNameplate()
+  {
+   m_namePlate->printNameplate();
   }
 
 } // namespace worlddirect

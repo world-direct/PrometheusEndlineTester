@@ -26,6 +26,10 @@ add_executable(PrometheusEndlineTester
     ui/widgets/qrwidget.cpp
     ui/widgets/nameplatewidget.cpp
     PrometheusEndlineTester.qrc
+    ui/model/testcasesumarymodel.cpp
+    ui/model/hosttestrun.cpp
+    ui/model/hosttest.cpp
+    ui/model/testcase.cpp
     )
 
 

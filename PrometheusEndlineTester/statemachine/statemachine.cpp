@@ -26,9 +26,21 @@ namespace worlddirect {
 
     connect(m_htrun, &MbedHostTestRunner::newLineReceived,      m_ui, &MainWindow::printData);
     connect(m_htrun, &MbedHostTestRunner::printData,            m_ui, &MainWindow::printData);
-    connect(m_htrun, &MbedHostTestRunner::newHostTestRun,          m_ui, &MainWindow::newHostTestRun);
+    connect(m_htrun, &MbedHostTestRunner::newHostTestRun,       m_ui, &MainWindow::newHostTestRun);
     connect(m_htrun, &MbedHostTestRunner::newHostTest,          m_ui, &MainWindow::newHostTest);
     connect(m_htrun, &MbedHostTestRunner::newTestCase,          m_ui, &MainWindow::newTestCase);
+    connect(m_htrun, &MbedHostTestRunner::startTestCase,        m_ui, &MainWindow::startTestCase);
+    connect(m_htrun, &MbedHostTestRunner::passedTestCase,        m_ui, &MainWindow::passedTestCase);
+    connect(m_htrun, &MbedHostTestRunner::failedTestCase,        m_ui, &MainWindow::failedTestCase);
+    connect(m_htrun, &MbedHostTestRunner::passedHostTest,        m_ui, &MainWindow::passedHostTest);
+    connect(m_htrun, &MbedHostTestRunner::failedHostTest,        m_ui, &MainWindow::failedHostTest);
+    connect(m_htrun, &MbedHostTestRunner::passedHostTestRun,        m_ui, &MainWindow::passedHostTestRun);
+    connect(m_htrun, &MbedHostTestRunner::failedHostTestRun,        m_ui, &MainWindow::failedHostTestRun);
+
+    connect(m_htrun, &MbedHostTestRunner::typeReceived,        m_ui, &MainWindow::typeReceived);
+    connect(m_htrun, &MbedHostTestRunner::hardwareVersionReceived,        m_ui, &MainWindow::hardwareVersionReceived);
+    connect(m_htrun, &MbedHostTestRunner::endpointNameReceived,        m_ui, &MainWindow::endpointNameReceived);
+    connect(m_htrun, &MbedHostTestRunner::iccIdReceived,        m_ui, &MainWindow::iccIdReceived);
 
     createStates();
   }

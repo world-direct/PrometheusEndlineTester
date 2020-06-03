@@ -28,14 +28,19 @@ namespace worlddirect {
 
   public slots:
     void setType(const QString& type);
+    void setHardwareVersion(const QString& hwVer);
     void setEndpointName(const QString& ep);
     void setIccId(const QString& icc);
+    void printNameplate();
+
 
   private:
     QGridLayout* m_layout;
     QLabel* m_organizationLabel;
     QLabel* m_typeLabel;
     QLabel* m_typeIndicator;
+    QLabel* m_hwVerLabel;
+    QLabel* m_hwVerIndicator;
     QLabel* m_endpointLabel;
     QLabel* m_endpointIndicator;
     QLabel* m_iccLabel;

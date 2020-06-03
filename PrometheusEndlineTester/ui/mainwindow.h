@@ -60,6 +60,18 @@ namespace worlddirect {
     void newHostTestRun(const QString& hostTestRun);
     void newHostTest(const QString& hostTestRun, const QString& hostTest);
     void newTestCase(const QString& hostTestRun, const QString& hostTest, const QString& hostTestCase);
+    void startTestCase(const QString& hostTestRun, const QString& hostTest, const QString& hostTestCase);
+    void passedTestCase(const QString& hostTestRun, const QString& hostTest, const QString& hostTestCase);
+    void failedTestCase(const QString& hostTestRun, const QString& hostTest, const QString& hostTestCase);
+    void passedHostTest(const QString& hostTestRun, const QString& hostTest);
+    void failedHostTest(const QString& hostTestRun, const QString& hostTest);
+    void passedHostTestRun(const QString& hostTestRun);
+    void failedHostTestRun(const QString& hostTestRun);
+
+    void typeReceived(const QString& type);
+    void hardwareVersionReceived(const QString& hwVer);
+    void endpointNameReceived(const QString& epName);
+    void iccIdReceived(const QString& iccId);
 
   private:
     void createActions();

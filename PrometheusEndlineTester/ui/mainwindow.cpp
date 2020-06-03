@@ -151,6 +151,60 @@ namespace worlddirect{
     m_testExplorer->newTestCase(hostTestRun, hostTest, hostTestCase);
   }
 
+  void MainWindow::startTestCase(const QString &hostTestRun, const QString &hostTest, const QString &hostTestCase)
+  {
+    m_testExplorer->startTestCase(hostTestRun, hostTest, hostTestCase);
+  }
+
+  void MainWindow::passedTestCase(const QString &hostTestRun, const QString &hostTest, const QString &hostTestCase)
+  {
+    m_testExplorer->passedTestCase(hostTestRun, hostTest, hostTestCase);
+  }
+
+  void MainWindow::failedTestCase(const QString &hostTestRun, const QString &hostTest, const QString &hostTestCase)
+  {
+    m_testExplorer->failedTestCase(hostTestRun, hostTest, hostTestCase);
+  }
+
+  void MainWindow::passedHostTest(const QString &hostTestRun, const QString &hostTest)
+  {
+    m_testExplorer->passedHostTest(hostTestRun, hostTest);
+  }
+
+  void MainWindow::failedHostTest(const QString &hostTestRun, const QString &hostTest)
+  {
+    m_testExplorer->failedHostTest(hostTestRun, hostTest);
+  }
+
+  void MainWindow::passedHostTestRun(const QString &hostTestRun)
+  {
+    m_testExplorer->passedHostTestRun(hostTestRun);
+  }
+
+  void MainWindow::failedHostTestRun(const QString &hostTestRun)
+  {
+    m_testExplorer->failedHostTestRun(hostTestRun);
+  }
+
+  void MainWindow::typeReceived(const QString &type)
+  {
+    m_testExplorer->typeReceived(type);
+  }
+
+  void MainWindow::hardwareVersionReceived(const QString &hwVer)
+  {
+   m_testExplorer->hardwareVersionReceived(hwVer);
+  }
+
+  void MainWindow::endpointNameReceived(const QString &epName)
+  {
+    m_testExplorer->endpointNameReceived(epName);
+  }
+
+  void MainWindow::iccIdReceived(const QString &iccId)
+  {
+    m_testExplorer->iccIdReceived(iccId);
+  }
 
   void MainWindow::createActions()
   {
@@ -207,6 +261,7 @@ namespace worlddirect{
     m_printNameplateAct = new QAction(tr("Print Nameplate"));
     m_printNameplateAct->setStatusTip(tr("Print Nameplate"));
     connect(m_printNameplateAct, &QAction::triggered, this, &MainWindow::printNameplate);
+    connect(m_printNameplateAct, &QAction::triggered, m_testExplorer, &TestExplorer::printNameplate);
 
   }
 

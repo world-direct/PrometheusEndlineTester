@@ -7,7 +7,6 @@ QT_BEGIN_NAMESPACE
 
 class QLabel;
 class QTreeView;
-class QStandardItem;
 
 QT_END_NAMESPACE
 
@@ -33,10 +32,20 @@ namespace worlddirect {
     void newHostTestRun(const QString& hostTestRun);
     void newHostTest(const QString& hostTestRun, const QString& hostTest);
     void newTestCase(const QString& hostTestRun, const QString& hostTest, const QString& hostTestCase);
+    void startTestCase(const QString& hostTestRun, const QString& hostTest, const QString& hostTestCase);
+    void passedTestCase(const QString& hostTestRun, const QString& hostTest, const QString& hostTestCase);
+    void failedTestCase(const QString& hostTestRun, const QString& hostTest, const QString& hostTestCase);
+    void passedHostTest(const QString& hostTestRun, const QString& hostTest);
+    void failedHostTest(const QString& hostTestRun, const QString& hostTest);
+    void passedHostTestRun(const QString& hostTestRun);
+    void failedHostTestRun(const QString& hostTestRun);
 
-  private:
-   QStandardItem* findorCreateHtRun(const QString& hostTestRun);
-   QStandardItem* findorCreateHostTest(const QString& hostTestRun, const QString& hostTest);
+    void typeReceived(const QString& type);
+    void hardwareVersionReceived(const QString& hwVer);
+    void endpointNameReceived(const QString& epName);
+    void iccIdReceived(const QString& iccId);
+
+    void printNameplate();
 
   private:
     QWidget* m_testSetup;

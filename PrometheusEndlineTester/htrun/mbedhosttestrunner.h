@@ -44,9 +44,21 @@ namespace worlddirect {
     void testCaseStartReeived(const QString& testCaseName);
     void testCaseFinishReceived(const QString& testCaseName, int passed, int failed);
 
+    void typeReceived(const QString& epName);
+    void hardwareVersionReceived(const QString& epName);
+    void endpointNameReceived(const QString& epName);
+    void iccIdReceived(const QString& iccId);
+
     void newHostTestRun(const QString& hostTestRun);
     void newHostTest(const QString& hostTestRun, const QString& hostTest);
     void newTestCase(const QString& hostTestRun, const QString& hostTest, const QString& hostTestCase);
+    void startTestCase(const QString& hostTestRun, const QString& hostTest, const QString& hostTestCase);
+    void passedTestCase(const QString& hostTestRun, const QString& hostTest, const QString& hostTestCase);
+    void failedTestCase(const QString& hostTestRun, const QString& hostTest, const QString& hostTestCase);
+    void passedHostTest(const QString& hostTestRun, const QString& hostTest);
+    void failedHostTest(const QString& hostTestRun, const QString& hostTest);
+    void passedHostTestRun(const QString& hostTestRun);
+    void failedHostTestRun(const QString& hostTestRun);
 
 
   public slots:

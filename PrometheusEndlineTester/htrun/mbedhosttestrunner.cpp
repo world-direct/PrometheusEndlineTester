@@ -8,8 +8,8 @@
 namespace worlddirect {
   MbedHostTestRunner::MbedHostTestRunner(QObject* parent)
     :QSerialPort(parent),
-      m_testRun(),
-      m_hostTest()
+      m_testRun("UNKONWN TEST RUN"),
+      m_hostTest("UNKNOWN HOST TEST")
   {
     connect(this, &QSerialPort::readyRead, this, &MbedHostTestRunner::readSerialData);
     connect(this, &MbedHostTestRunner::newLineReceived, this, &MbedHostTestRunner::parseNewLine);
@@ -139,6 +139,11 @@ namespace worlddirect {
           }
         auto success = val[0].compare(GREENTEA_TEST_ENV_SUCCESS) == 0;
         emit endReceived(success);
+        if(success){
+            emit passedHostTestRun(m_testRun);
+          }else{
+            emit failedHostTestRun(m_testRun);
+          }
       }
 
     // {{__exit;0}}
@@ -167,8 +172,8 @@ namespace worlddirect {
           {
             return;
           }
-        newSyncReceived(uuid);
         emit syncReceived(uuid);
+        newSyncReceived(uuid);
         return;
       }
 
@@ -245,6 +250,7 @@ namespace worlddirect {
           }
         QString testCaseName(val[0]);
         emit testCaseStartReeived(testCaseName);
+        emit startTestCase(m_testRun, m_hostTest, testCaseName);
         return;
       }
 
@@ -265,6 +271,12 @@ namespace worlddirect {
             return;
           }
         emit testCaseFinishReceived(testCaseName, passed, failed);
+        if(failed == 0 )
+          {
+            emit passedTestCase(m_testRun, m_hostTest, testCaseName);
+          }else {
+            emit failedTestCase(m_testRun, m_hostTest, testCaseName);
+          }
         return;
       }
 
@@ -284,6 +296,53 @@ namespace worlddirect {
             return;
           }
         emit testCaseSummaryReceived(passed, failed);
+        if(failed ==0){
+            emit passedHostTest(m_testRun, m_hostTest);
+          }else {
+            emit failedHostTest(m_testRun, m_hostTest);
+          }
+
+        return;
+      }
+
+    if(key.compare(CO1_FUNCTIONAL_ENDLINE_TEST_TYPE) == 0)
+      {
+        if(val.size()!= 1){
+            return;
+          }
+        QString type(val[0]);
+        emit typeReceived(type);
+        return;
+      }
+
+    if(key.compare(CO1_FUNCTIONAL_ENDLINE_TEST_HWVER) == 0)
+      {
+        if(val.size()!= 1){
+            return;
+          }
+        QString hwVer(val[0]);
+        emit hardwareVersionReceived(hwVer);
+        return;
+      }
+
+    // {{__ep_name;CO139X92IMH9MR7D}}
+    if(key.compare(CO1_FUNCTIONAL_ENDLINE_TEST_EPNAME) == 0)
+      {
+        if(val.size()!= 1){
+            return;
+          }
+        QString epName(val[0]);
+        emit endpointNameReceived(epName);
+        return;
+      }
+
+    if(key.compare(CO1_FUNCTIONAL_ENDLINE_TEST_ICCID) == 0)
+      {
+        if(val.size()!= 1){
+            return;
+          }
+        QString iccId(val[0]);
+        emit iccIdReceived(iccId);
         return;
       }
 
@@ -292,31 +351,19 @@ namespace worlddirect {
 
   void MbedHostTestRunner::newHostTestReceived(const QString &hostTestName)
   {
-    if(m_testRun == Q_NULLPTR)
-      {
-        m_testRun = "UNKONWN TEST RUN";
-        emit newHostTestRun(m_testRun);
-      }
-
     m_hostTest = hostTestName;
     emit newHostTest(m_testRun, m_hostTest);
   }
 
   void MbedHostTestRunner::newTestCaseReceived(const QString &testCaseName)
   {
-    if(m_hostTest == Q_NULLPTR){
-        newHostTestReceived(tr("UNKNOWN HOST TEST"));
-      }
     emit newTestCase(m_testRun, m_hostTest, testCaseName);
   }
 
   void MbedHostTestRunner::newSyncReceived(const QUuid &uuid)
   {
-    auto tmp = m_testRun;
-
     m_testRun = uuid.toString(QUuid::WithoutBraces);
     emit newHostTestRun(m_testRun);
-
   }
 
   qint64 MbedHostTestRunner::sendKv(const QByteArray& key, const QByteArray& val)
