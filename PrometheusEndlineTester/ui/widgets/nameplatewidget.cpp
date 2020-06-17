@@ -21,15 +21,16 @@ namespace worlddirect {
       m_endpointIndicator(new QLabel(this)),
       m_iccLabel(new QLabel(tr("ICC:"),this)),
       m_iccIndicator(new QLabel(this)),
-      m_ceMark(new QLabel(this)),
-      m_qrCode(new QRWidget(this)),
-      m_weeeMark(new QLabel(this))
+      m_ceMark(new QLabel()),
+      m_qrCode(new QRWidget()),
+      m_weeeMark(new QLabel())
   {
-    setMinimumWidth(297);
-    setMaximumWidth(297);
-    setMinimumHeight(210);
-    setMaximumHeight(210);
+    setMinimumWidth(560);
+    setMaximumWidth(560);
+    setMinimumHeight(168);
+    setMaximumHeight(168);
 
+    m_organizationLabel->setAlignment(Qt::AlignCenter);
     auto font = m_organizationLabel->font();
     font.setBold(true);
     m_organizationLabel->setFont(font);
@@ -42,18 +43,18 @@ namespace worlddirect {
 
     m_iccIndicator->setAlignment(Qt::AlignRight);
 
-    int logo_size = minimumWidth()/3;
+    int logo_size = minimumHeight()/9.0*3.0;
 
     QPixmap ceMarkPix(":/PrometheusEndlineTester/images/ce_mark.svg");
     m_ceMark->setPixmap(ceMarkPix.scaled(logo_size-10,logo_size-10,Qt::KeepAspectRatio));
 
     QPixmap weeeMarkPix(":/PrometheusEndlineTester/images/WEEE_mark.svg");
     m_weeeMark->setPixmap(weeeMarkPix.scaled(logo_size-10,logo_size-10,Qt::KeepAspectRatio));
-    //m_weeeMark->setMinimumWidth(logo_size);
-    //m_weeeMark->setMinimumHeight(logo_size);
 
-    m_qrCode->setMinimumWidth(logo_size);
-    m_qrCode->setMinimumHeight(logo_size);
+    int qr_size = 168;
+
+    m_qrCode->setMinimumWidth(qr_size);
+    m_qrCode->setMinimumHeight(qr_size);
 
     auto line = new QFrame();
     line->setFrameShape(QFrame::HLine);
@@ -63,30 +64,32 @@ namespace worlddirect {
     line2->setFrameShape(QFrame::HLine);
     line2->setFrameShadow(QFrame::Raised);
 
-    m_layout->setMargin(5);
+    m_layout->setMargin(0);
     m_layout->setHorizontalSpacing(2);
     m_layout->setVerticalSpacing(2);
-    m_layout->addWidget(m_organizationLabel,0,0,1,6,Qt::AlignCenter);
 
-    m_layout->addWidget(line,1,0,1,6);
+    m_layout->addWidget(m_qrCode, 0,0,9,2,Qt::AlignCenter);
 
-    m_layout->addWidget(m_typeLabel,2,0,1,3);
-    m_layout->addWidget(m_typeIndicator,2,3,1,3,Qt::AlignRight);
-    m_layout->addWidget(m_hwVerLabel,3,0,1,3);
-    m_layout->addWidget(m_hwVerIndicator,3,3,1,3, Qt::AlignRight);
-    m_layout->addWidget(m_endpointLabel,4,0,1,3);
-    m_layout->addWidget(m_endpointIndicator,4,3,1,3,Qt::AlignRight);
-    m_layout->addWidget(m_iccLabel,5,0,1,3);
-    m_layout->addWidget(m_iccIndicator,5,3,1,3,Qt::AlignRight);
 
-    m_layout->addWidget(line2,6,0,1,6);
+    m_layout->addWidget(m_organizationLabel,0,2,1,2,Qt::AlignCenter);
 
-    m_layout->addWidget(m_ceMark,7,0,1,2,Qt::AlignCenter);
-    m_layout->addWidget(m_qrCode, 7,2,1,2,Qt::AlignCenter);
-    m_layout->addWidget(m_weeeMark, 7,4,1,2,Qt::AlignCenter);
+    m_layout->addWidget(line,1,2,1,2);
+
+    m_layout->addWidget(m_typeLabel,2,2,1,1);
+    m_layout->addWidget(m_typeIndicator,2,3,1,1,Qt::AlignRight);
+    m_layout->addWidget(m_hwVerLabel,3,2,1,1);
+    m_layout->addWidget(m_hwVerIndicator,3,3,1,1, Qt::AlignRight);
+    m_layout->addWidget(m_endpointLabel,4,2,1,1);
+    m_layout->addWidget(m_endpointIndicator,4,3,1,1,Qt::AlignRight);
+    m_layout->addWidget(m_iccLabel,5,2,1,1);
+    m_layout->addWidget(m_iccIndicator,5,3,1,1,Qt::AlignRight);
+
+    m_layout->addWidget(line2,6,2,1,2);
+
+    m_layout->addWidget(m_ceMark,0,4,3,1,Qt::AlignCenter);
+    m_layout->addWidget(m_weeeMark, 3,4,3,1,Qt::AlignCenter);
 
     this->setLayout(m_layout);
-
   }
 
   void NamePlateWidget::setType(const QString &type)
@@ -117,9 +120,10 @@ namespace worlddirect {
     printer.setOutputFileName(m_endpointIndicator->text()+".pdf");
     printer.setPageMargins(0, 0, 0, 0, QPrinter::Millimeter);
     printer.setFullPage(false);
-    printer.setPageSize(QPrinter::A8);
+    //printer.setPageSize(QPrinter::A8);
+    printer.setPageSizeMM(QSizeF(100.0 , 30.0));
     printer.setColorMode(QPrinter::GrayScale);
-    printer.setOrientation(QPrinter::Landscape);
+    //printer.setOrientation(QPrinter::Landscape);
 
     QPainter painter(&printer);
 

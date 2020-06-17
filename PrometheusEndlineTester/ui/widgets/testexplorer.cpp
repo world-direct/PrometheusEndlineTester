@@ -20,7 +20,7 @@ namespace worlddirect {
     m_layout->setMargin(0);
     m_layout->setHorizontalSpacing(0);
     m_layout->setVerticalSpacing(0);
-    this->setMaximumSize(300,this->maximumHeight());
+    this->setMaximumSize(560,this->maximumHeight());
 
     m_testSetup->setAutoFillBackground(true);
     auto testSetupLayout = new QGridLayout();

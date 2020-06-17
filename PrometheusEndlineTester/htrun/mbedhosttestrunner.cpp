@@ -305,6 +305,7 @@ namespace worlddirect {
         return;
       }
 
+    // {{__type;prometheus}}
     if(key.compare(CO1_FUNCTIONAL_ENDLINE_TEST_TYPE) == 0)
       {
         if(val.size()!= 1){
@@ -315,6 +316,7 @@ namespace worlddirect {
         return;
       }
 
+    // {{__hw_ver;1}}
     if(key.compare(CO1_FUNCTIONAL_ENDLINE_TEST_HWVER) == 0)
       {
         if(val.size()!= 1){
@@ -325,7 +327,7 @@ namespace worlddirect {
         return;
       }
 
-    // {{__ep_name;CO139X92IMH9MR7D}}
+    // {{__ep_name;PO1ODA2NjI4UQgAIAA8}}
     if(key.compare(CO1_FUNCTIONAL_ENDLINE_TEST_EPNAME) == 0)
       {
         if(val.size()!= 1){
@@ -336,6 +338,7 @@ namespace worlddirect {
         return;
       }
 
+    // {{__icc_id;89423053217282084858}}
     if(key.compare(CO1_FUNCTIONAL_ENDLINE_TEST_ICCID) == 0)
       {
         if(val.size()!= 1){
