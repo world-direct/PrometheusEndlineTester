@@ -242,8 +242,8 @@ namespace worlddirect{
     m_connectAct->setStatusTip(tr("Connect to the target"));
     connect(m_connectAct, &QAction::triggered, this, &MainWindow::targetConnect);
 
-    m_programAct = new QAction(tr("Program & Verify"), this);
-    m_programAct->setStatusTip(tr("Program & Verify"));
+    m_programAct = new QAction(tr("Program Test"), this);
+    m_programAct->setStatusTip(tr("Program & Verify Test"));
     connect(m_programAct, &QAction::triggered, this, &MainWindow::targetProgram);
 
     m_resetAct = new QAction(tr("Reset"));

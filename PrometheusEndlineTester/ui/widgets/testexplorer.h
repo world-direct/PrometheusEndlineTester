@@ -13,6 +13,7 @@ QT_END_NAMESPACE
 namespace worlddirect {
 
   class NamePlateWidget;
+  class DcPlateWidget;
   class AbstractTest;
 
   class TestExplorer : public QWidget
@@ -50,8 +51,10 @@ namespace worlddirect {
   private:
     QWidget* m_testSetup;
     NamePlateWidget* m_namePlate;
+    DcPlateWidget* m_dcPlate;
     QLabel* m_testCaseSumary;
     QTreeView* m_testCases;
+
 
   };
 

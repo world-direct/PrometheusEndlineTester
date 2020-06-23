@@ -39,7 +39,7 @@ namespace worlddirect {
     QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
     auto pathToCmd = settings.value(KEY_FLASHER_PATHTOCMD).toString();
     auto writeArgs = settings.value(KEY_FLASHER_WRITEARGS).toString();
-    auto pathToFirmware = settings.value(KEY_FLASHER_PATHTOFW).toString();
+    auto pathToFirmware = settings.value(KEY_FLASHER_PATHTOTEST).toString();
 
     m_mode = Mode::PROGRAM;
     this->start(pathToCmd, {writeArgs, pathToFirmware}, QIODevice::ReadOnly);

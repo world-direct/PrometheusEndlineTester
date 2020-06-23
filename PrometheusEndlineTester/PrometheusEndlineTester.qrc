@@ -7,5 +7,9 @@
         <file>unicode/check_mark.svg</file>
         <file>unicode/stopwatch.svg</file>
         <file>unicode/white_hourglass.svg</file>
+        <file>images/LabelAC.svg</file>
+        <file>images/LabelDC.svg</file>
+        <file>images/LabelAC.png</file>
+        <file>images/LabelDC.png</file>
     </qresource>
 </RCC>

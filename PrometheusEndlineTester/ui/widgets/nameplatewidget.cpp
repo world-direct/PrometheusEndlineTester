@@ -23,7 +23,8 @@ namespace worlddirect {
       m_iccIndicator(new QLabel(this)),
       m_ceMark(new QLabel()),
       m_qrCode(new QRWidget()),
-      m_weeeMark(new QLabel())
+      m_weeeMark(new QLabel()),
+      m_acLabel(new QLabel())
   {
     setMinimumWidth(560);
     setMaximumWidth(560);
@@ -43,7 +44,7 @@ namespace worlddirect {
 
     m_iccIndicator->setAlignment(Qt::AlignRight);
 
-    int logo_size = minimumHeight()/9.0*3.0;
+    int logo_size = minimumHeight()/15.0*7.0;
 
     QPixmap ceMarkPix(":/PrometheusEndlineTester/images/ce_mark.svg");
     m_ceMark->setPixmap(ceMarkPix.scaled(logo_size-10,logo_size-10,Qt::KeepAspectRatio));
@@ -64,12 +65,14 @@ namespace worlddirect {
     line2->setFrameShape(QFrame::HLine);
     line2->setFrameShadow(QFrame::Raised);
 
+    QPixmap acLabelPix(":/PrometheusEndlineTester/images/LabelAC.png");
+    m_acLabel->setPixmap(acLabelPix.scaled(329, 80, Qt::KeepAspectRatio));
+
     m_layout->setMargin(0);
-    m_layout->setHorizontalSpacing(2);
-    m_layout->setVerticalSpacing(2);
+    m_layout->setHorizontalSpacing(0);
+    m_layout->setVerticalSpacing(0);
 
-    m_layout->addWidget(m_qrCode, 0,0,9,2,Qt::AlignCenter);
-
+    m_layout->addWidget(m_qrCode, 0,0,15,2,Qt::AlignCenter);
 
     m_layout->addWidget(m_organizationLabel,0,2,1,2,Qt::AlignCenter);
 
@@ -86,10 +89,13 @@ namespace worlddirect {
 
     m_layout->addWidget(line2,6,2,1,2);
 
-    m_layout->addWidget(m_ceMark,0,4,3,1,Qt::AlignCenter);
-    m_layout->addWidget(m_weeeMark, 3,4,3,1,Qt::AlignCenter);
+    m_layout->addWidget(m_ceMark,0,4,7,1,Qt::AlignCenter);
+    m_layout->addWidget(m_weeeMark, 8,4,7,1,Qt::AlignCenter);
+
+    m_layout->addWidget(m_acLabel, 7, 2, 8, 2, Qt::AlignCenter);
 
     this->setLayout(m_layout);
+
   }
 
   void NamePlateWidget::setType(const QString &type)

@@ -48,6 +48,7 @@ namespace worlddirect {
     QLabel* m_ceMark;
     QRWidget* m_qrCode;
     QLabel* m_weeeMark;
+    QLabel* m_acLabel;
 
   };
 

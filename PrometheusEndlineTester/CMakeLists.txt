@@ -30,6 +30,7 @@ add_executable(PrometheusEndlineTester
     ui/model/hosttestrun.cpp
     ui/model/hosttest.cpp
     ui/model/testcase.cpp
+    ui/widgets/dcplatewidget.cpp
     )
 
 

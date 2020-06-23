@@ -8,6 +8,7 @@ constexpr const char* KEY_FLASHER_WRITEARGS = "flasher/writeArgs";
 constexpr const char* KEY_FLASHER_ERASEARGS = "flasher/eraseArgs";
 constexpr const char* KEY_FLASHER_RESETARGS = "flasher/resetArgs";
 constexpr const char* KEY_FLASHER_CONNECTARGS = "flasher/connectArgs";
+constexpr const char* KEY_FLASHER_PATHTOTEST = "flasher/pathToTestBinary";
 constexpr const char* KEY_FLASHER_PATHTOFW = "flasher/pathToBinary";
 
 constexpr const char* KEY_SERIAL_PORT = "serial/port";

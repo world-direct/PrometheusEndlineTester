@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QTreeView>
 
+#include "dcplatewidget.h"
 #include "nameplatewidget.h"
 
 #include <ui/model/testcasesumarymodel.h>
@@ -13,6 +14,7 @@ namespace worlddirect {
   TestExplorer::TestExplorer(QWidget *parent) : QWidget(parent),
     m_testSetup(new QWidget()),
     m_namePlate(new NamePlateWidget()),
+    m_dcPlate(new DcPlateWidget()),
     m_testCaseSumary(new QLabel()),
     m_testCases(new QTreeView())
   {
@@ -39,6 +41,7 @@ namespace worlddirect {
     m_layout->addWidget(line);
 
     m_layout->addWidget(m_namePlate);
+    m_layout->addWidget(m_dcPlate);
 
     auto line2 = new QFrame();
     line2->setFrameShape(QFrame::HLine);
@@ -144,6 +147,7 @@ namespace worlddirect {
   void TestExplorer::printNameplate()
   {
    m_namePlate->printNameplate();
+   m_dcPlate->printNameplate();
   }
 
 } // namespace worlddirect
