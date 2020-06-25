@@ -35,11 +35,12 @@ namespace worlddirect{
       m_exitAct(Q_NULLPTR),
       m_aboutAct(Q_NULLPTR),
       m_connectAct(Q_NULLPTR),
-      m_programAct(Q_NULLPTR),
+      m_programTSTAct(Q_NULLPTR),
       m_resetAct(Q_NULLPTR),
       m_serialConnectAct(Q_NULLPTR),
       m_serialSendSyncAct(Q_NULLPTR),
       m_printNameplateAct(Q_NULLPTR),
+      m_programFWAct(Q_NULLPTR),
       m_fileMenu(Q_NULLPTR),
       m_targetMenu(Q_NULLPTR),
       m_serialMenu(Q_NULLPTR),
@@ -242,9 +243,9 @@ namespace worlddirect{
     m_connectAct->setStatusTip(tr("Connect to the target"));
     connect(m_connectAct, &QAction::triggered, this, &MainWindow::targetConnect);
 
-    m_programAct = new QAction(tr("Program Test"), this);
-    m_programAct->setStatusTip(tr("Program & Verify Test"));
-    connect(m_programAct, &QAction::triggered, this, &MainWindow::targetProgram);
+    m_programTSTAct = new QAction(tr("Program Test"), this);
+    m_programTSTAct->setStatusTip(tr("Program & Verify Test"));
+    connect(m_programTSTAct, &QAction::triggered, this, &MainWindow::targetProgramTest);
 
     m_resetAct = new QAction(tr("Reset"));
     m_resetAct->setStatusTip(tr("reset taget"));
@@ -263,6 +264,10 @@ namespace worlddirect{
     connect(m_printNameplateAct, &QAction::triggered, this, &MainWindow::printNameplate);
     connect(m_printNameplateAct, &QAction::triggered, m_testExplorer, &TestExplorer::printNameplate);
 
+    m_programFWAct = new QAction(tr("Program Firmware"));
+    m_programFWAct->setStatusTip(tr("Program Firmware"));
+    connect(m_programFWAct, &QAction::triggered, this, &MainWindow::targetProgramFirmware);
+
   }
 
   void MainWindow::createMenus()
@@ -279,8 +284,9 @@ namespace worlddirect{
 
     m_targetMenu= menuBar()->addMenu(tr("&Target"));
     m_targetMenu->addAction(m_connectAct);
-    m_targetMenu->addAction(m_programAct);
+    m_targetMenu->addAction(m_programTSTAct);
     m_targetMenu->addAction(m_resetAct);
+    m_targetMenu->addAction(m_programFWAct);
 
     m_serialMenu = menuBar()->addMenu(tr("&Serial"));
     m_serialMenu->addAction(m_serialConnectAct);
@@ -302,8 +308,9 @@ namespace worlddirect{
     m_targetToolBar = addToolBar(tr("Target"));
     m_targetToolBar->setObjectName("targetToolBar");
     m_targetToolBar->addAction(m_connectAct);
-    m_targetToolBar->addAction(m_programAct);
+    m_targetToolBar->addAction(m_programTSTAct);
     m_targetToolBar->addAction(m_resetAct);
+    m_targetToolBar->addAction(m_programFWAct);
 
     m_serialToolBar = addToolBar(tr("Serial"));
     m_serialToolBar->setObjectName("serialToolBar");

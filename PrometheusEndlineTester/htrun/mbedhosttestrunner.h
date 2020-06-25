@@ -64,6 +64,7 @@ namespace worlddirect {
   public slots:
     void openSerial();
     void serialSendSync();
+    void serialSendSyncUuid(const QUuid &uuid);
 
   private slots:
     void readSerialData();

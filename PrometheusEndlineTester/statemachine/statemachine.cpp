@@ -16,10 +16,11 @@ namespace worlddirect {
     connect(this, &StateMachine::printData,                     m_ui, &MainWindow::printData);
 
     connect(m_ui, &MainWindow::targetConnect,                   m_stflash, &StLinkDeviceFlasher::connectToTarget);
-    connect(m_ui, &MainWindow::targetProgram,                   m_stflash, &StLinkDeviceFlasher::programTarget);
+    connect(m_ui, &MainWindow::targetProgramTest,                   m_stflash, &StLinkDeviceFlasher::programTargetTest);
     connect(m_ui, &MainWindow::targetReset,                     m_stflash, &StLinkDeviceFlasher::resetTarget);
     connect(m_ui, &MainWindow::serialConnect,                   m_htrun, &MbedHostTestRunner::openSerial);
     connect(m_ui, &MainWindow::serialSendSync,                  m_htrun, &MbedHostTestRunner::serialSendSync);
+    connect(m_ui, &MainWindow::targetProgramFirmware,           m_stflash, &StLinkDeviceFlasher::programTargetFirmware);
 
     connect(m_stflash, &StLinkDeviceFlasher::newLineReceived,   m_ui, &MainWindow::printData);
     connect(m_stflash, &StLinkDeviceFlasher::printData,         m_ui, &MainWindow::printData);

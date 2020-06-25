@@ -36,11 +36,12 @@ namespace worlddirect {
     void printData(const QByteArray &dt);
     void targetNew();
     void targetConnect();
-    void targetProgram();
+    void targetProgramTest();
     void targetReset();
     void serialConnect();
     void serialSendSync();
     void printNameplate();
+    void targetProgramFirmware();
 
   public slots:
     void readSettings();
@@ -103,11 +104,12 @@ namespace worlddirect {
     QAction* m_exitAct;
     QAction* m_aboutAct;
     QAction* m_connectAct;
-    QAction* m_programAct;
+    QAction* m_programTSTAct;
     QAction* m_resetAct;
     QAction* m_serialConnectAct;
     QAction* m_serialSendSyncAct;
     QAction* m_printNameplateAct;
+    QAction* m_programFWAct;
 
     QMenu* m_fileMenu;
     QMenu* m_targetMenu;

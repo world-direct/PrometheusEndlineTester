@@ -8,7 +8,8 @@ namespace worlddirect {
 
   StLinkDeviceFlasher::StLinkDeviceFlasher(QObject *parent)
     :QProcess(parent),
-      m_mode(Mode::NONE)
+      m_mode(Mode::NONE),
+      m_testRun()
   {
     connect(this, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(finishedSlot(int,QProcess::ExitStatus)));
     connect(this, &StLinkDeviceFlasher::readyReadStandardOutput, this, &StLinkDeviceFlasher::readProcessData);
@@ -30,19 +31,9 @@ namespace worlddirect {
 
   }
 
-  void StLinkDeviceFlasher::programTarget()
+  void StLinkDeviceFlasher::programTargetTest()
   {
-    if (state() != QProcess::NotRunning){
-        return;
-      }
-
-    QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
-    auto pathToCmd = settings.value(KEY_FLASHER_PATHTOCMD).toString();
-    auto writeArgs = settings.value(KEY_FLASHER_WRITEARGS).toString();
-    auto pathToFirmware = settings.value(KEY_FLASHER_PATHTOTEST).toString();
-
-    m_mode = Mode::PROGRAM;
-    this->start(pathToCmd, {writeArgs, pathToFirmware}, QIODevice::ReadOnly);
+    programTarget(BinaryType::TEST);
   }
 
   void StLinkDeviceFlasher::resetTarget()
@@ -57,6 +48,41 @@ namespace worlddirect {
 
     m_mode = Mode::RESET;
     this->start(pathToCmd, {resetArgs}, QIODevice::ReadOnly);
+
+  }
+
+  void StLinkDeviceFlasher::programTargetFirmware()
+  {
+    programTarget(BinaryType::FIRMWARE);
+  }
+
+  void StLinkDeviceFlasher::programTarget(StLinkDeviceFlasher::BinaryType type)
+  {
+    if (state() != QProcess::NotRunning){
+        return;
+      }
+
+    QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
+    auto pathToCmd = settings.value(KEY_FLASHER_PATHTOCMD).toString();
+    auto writeArgs = settings.value(KEY_FLASHER_WRITEARGS).toString();
+
+    auto binaryKey =KEY_FLASHER_PATHTOTEST ;
+    switch (type) {
+      case BinaryType::NONE: {return;}
+      case BinaryType::TEST: {
+          binaryKey = KEY_FLASHER_PATHTOTEST;
+          break;
+        }
+      case BinaryType::FIRMWARE: {
+          binaryKey = KEY_FLASHER_PATHTOFW;
+          break;
+        }
+      default:{return;}
+      }
+    auto pathToFirmware = settings.value(binaryKey).toString();
+
+    m_mode = Mode::PROGRAM;
+    this->start(pathToCmd, {writeArgs, pathToFirmware}, QIODevice::ReadOnly);
 
   }
 

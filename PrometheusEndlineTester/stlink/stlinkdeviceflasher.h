@@ -14,6 +14,9 @@ namespace worlddirect {
     enum class Mode{NONE, CONNECT, PROGRAM, RESET};
 
   public:
+    enum class BinaryType{NONE, TEST, FIRMWARE};
+
+  public:
     explicit StLinkDeviceFlasher(QObject* parent=nullptr);
     StLinkDeviceFlasher&  operator= ( const  StLinkDeviceFlasher& ) = delete;
     StLinkDeviceFlasher&  operator= ( const  StLinkDeviceFlasher&& ) = delete;
@@ -33,9 +36,13 @@ namespace worlddirect {
     void targetReset();
 
   public slots:
+    void newHostTestRun(const QString& hostTestRun);
+
     void connectToTarget();
-    void programTarget();
+    void programTargetTest();
     void resetTarget();
+    void programTargetFirmware();
+    void programTarget(BinaryType type);
 
   private slots:
     void readProcessData();
@@ -44,6 +51,7 @@ namespace worlddirect {
 
   private :
     Mode m_mode;
+    QString m_testRun;
 
   };
 

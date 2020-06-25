@@ -52,6 +52,11 @@ namespace worlddirect {
     sendSync(uuid);
   }
 
+  void MbedHostTestRunner::serialSendSyncUuid(const QUuid &uuid)
+  {
+    sendSync(uuid);
+  }
+
   void MbedHostTestRunner::readSerialData()
   {
     while (canReadLine()) {
