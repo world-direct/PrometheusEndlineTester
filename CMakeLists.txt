@@ -32,5 +32,11 @@ include("strict_compile_flags.cmake")
 
 #########################################
 ## PrometheusEndlineTester
+add_subdirectory(DeviceProvisioningAPI)
+#########################################
+
+
+#########################################
+## PrometheusEndlineTester
 add_subdirectory(PrometheusEndlineTester)
 #########################################

@@ -8,6 +8,10 @@
 #include "PrometheusEndlineTester_global.h"
 #include <statemachine/statemachine.h>
 
+#include "identityclient.h"
+#include "deviceprovisioningapiclient.h"
+#include <iostream>
+
 int main(int argc, char *argv[])
 {
   QApplication a(argc, argv);
@@ -27,8 +31,10 @@ int main(int argc, char *argv[])
 
   worlddirect::StateMachine sm(&a);
   sm.start();
-  a.exec();
+  auto res = a.exec();
   sm.stop();
 
-  return EXIT_SUCCESS;
+
+
+  return res;
 }

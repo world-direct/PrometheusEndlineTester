@@ -29,9 +29,11 @@ namespace worlddirect {
     testSetupLayout->setMargin(0);
     testSetupLayout->setHorizontalSpacing(0);
     testSetupLayout->setVerticalSpacing(0);
-    testSetupLayout->addWidget(new QLabel(tr("UUID:")),0,0);
-    testSetupLayout->addWidget(new QLabel(tr("Version:")),1,0);
-    testSetupLayout->addWidget(new QLabel(tr("Timeout:")),2,0);
+    testSetupLayout->addWidget(new QLabel(tr("id:")), 0, 0);
+    testSetupLayout->addWidget(new QLabel(tr("type:")), 1, 0);
+    testSetupLayout->addWidget(new QLabel(tr("version:")), 2, 0);
+    testSetupLayout->addWidget(new QLabel(tr("iccid:")), 3, 0);
+    testSetupLayout->addWidget(new QLabel(tr("psk:")), 4, 0);
     m_testSetup->setLayout(testSetupLayout);
     m_layout->addWidget(m_testSetup);
 

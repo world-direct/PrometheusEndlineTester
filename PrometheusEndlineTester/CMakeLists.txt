@@ -18,7 +18,6 @@ add_executable(PrometheusEndlineTester
     stlink/stlinkdeviceflasher.cpp
     htrun/mbedhosttestrunner.cpp
     statemachine/statemachine.cpp
-    nameplate/nameplate.cpp
     ui/widgets/testexplorer.cpp
     ui/mainwindow.cpp
     ui/dialogs/settingsdialog.cpp
@@ -33,5 +32,4 @@ add_executable(PrometheusEndlineTester
     ui/widgets/dcplatewidget.cpp
     )
 
-
-target_link_libraries(PrometheusEndlineTester PRIVATE Qt5::PrintSupport Qt5::Widgets Qt5::SerialPort QRCodeGenerator)
+target_link_libraries(PrometheusEndlineTester PRIVATE Qt5::PrintSupport Qt5::Widgets Qt5::SerialPort QRCodeGenerator DeviceProvisioningAPIClent )
