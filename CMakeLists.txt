@@ -31,7 +31,7 @@ target_include_directories(QRCodeGenerator
 include("strict_compile_flags.cmake")
 
 #########################################
-## PrometheusEndlineTester
+## DeviceProvisioningAPI
 add_subdirectory(DeviceProvisioningAPI)
 #########################################
 
