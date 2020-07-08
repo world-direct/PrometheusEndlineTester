@@ -32,11 +32,12 @@ namespace worlddirect {
     std::string DevicesByIdPskGet(const std::string& id);
     std::string DevicesByIdValidateEncryptionGet(const std::string& id, const std::string& message);
 
-    void FirmwareGet();
+    void FirmwareGet(const std::string& name, const std::string& filename);
 
   private:
-    static size_t curlWriteFuncCB(char *ptr, size_t size, size_t nmemb, std::stringstream * in);
+    static size_t curlWriteFuncCB(char *ptr, size_t size, size_t nmemb, std::iostream *in);
     static size_t curlReadFuncCB(char *ptr, size_t size, size_t nmemb, std::stringstream * out);
+
 
   private:
     std::stringstream m_stringBuffer;

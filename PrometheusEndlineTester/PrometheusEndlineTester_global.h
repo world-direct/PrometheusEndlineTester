@@ -18,6 +18,14 @@ constexpr const char* KEY_SERIAL_STOP = "serial/stop";
 constexpr const char* KEY_SERIAL_PARITY = "serial/parity";
 constexpr const char* KEY_SERIAL_FLOWCTRL = "serial/flowctrl";
 
+constexpr const char* KEY_IDENTITY_SERVER = "identity/server";
+constexpr const char* KEY_IDENTITY_CLIENT = "identity/client";
+constexpr const char* KEY_IDENTITY_SECRET = "identity/secret";
+constexpr const char* KEY_IDENTITY_SCOPE = "identity/scope";
+
+constexpr const char* KEY_PROVISIONING_SERVER = "provisioning/server";
+constexpr const char* KEY_PROVISIONING_NAME = "provisioning/name";
+
 constexpr const char* KEY_UI_GEOMETRY = "ui/geometry";
 constexpr const char* KEY_UI_WINDOWSTATE = "ui/windowstate";
 

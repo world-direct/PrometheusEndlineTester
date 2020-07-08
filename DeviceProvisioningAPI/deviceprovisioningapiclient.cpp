@@ -11,6 +11,8 @@ namespace worlddirect {
   constexpr const char* S_PSK = "psk";
   constexpr const char* S_VALIDATE_ENCRYPTION = "validateEncryption";
   constexpr const char* S_MESSAGE = "message";
+  constexpr const char* S_FIRMWARE = "firmware";
+  constexpr const char* S_NAME = "name";
 
   const std::string DeviceProvisioningAPIClient::S_DEFAULT_TOKEN_TYPE = "Bearer";
 
@@ -243,11 +245,6 @@ namespace worlddirect {
         return std::string();
       }
 
-    if (CURLE_OK != res)
-      {
-        curl_easy_cleanup(curl);
-        return std::string();
-      }
     long http_code;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
 
@@ -267,7 +264,56 @@ namespace worlddirect {
     return stringBufferIn.str();
   }
 
-  size_t DeviceProvisioningAPIClient::curlWriteFuncCB(char *ptr, size_t size, size_t nmemb, std::stringstream *in)
+  void DeviceProvisioningAPIClient::FirmwareGet(const std::string &name, const std::string &filename)
+  {
+    std::stringstream stringBuilder;
+    stringBuilder << m_apiUrl << "/" << S_FIRMWARE<< "?" << S_NAME <<"="<< name;;
+    auto url = stringBuilder.str();
+
+    CURLcode res;
+    auto curl = curl_easy_duphandle(m_curl);
+
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+
+    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
+
+    std::fstream outfile;
+
+    outfile.open(filename, std::ios::out | std::ios::trunc);
+    if(outfile.is_open() == false){
+        return;
+      }
+
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &outfile);
+    res = curl_easy_perform(curl);
+    if (res != CURLE_OK){
+        outfile.close();
+        curl_easy_cleanup(curl);
+        return;
+      }
+
+    long http_code;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+
+    if (http_code != 200 && http_code != 204){
+        outfile.close();
+        curl_easy_cleanup(curl);
+        return;
+      }
+
+    if (http_code != 200) {
+        outfile.close();
+        curl_easy_cleanup(curl);
+        return;
+      }
+
+    outfile.close();
+    curl_easy_cleanup(curl);
+    return;
+
+  }
+
+  size_t DeviceProvisioningAPIClient::curlWriteFuncCB(char *ptr, size_t size, size_t nmemb, std::iostream *in)
   {
     if (in == nullptr) {
         std::cerr << __PRETTY_FUNCTION__ << " discoveryClient is null" << std::endl;
