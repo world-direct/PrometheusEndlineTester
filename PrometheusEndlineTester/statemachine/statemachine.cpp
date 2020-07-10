@@ -4,6 +4,7 @@
 #include "ui/mainwindow.h"
 #include "stlink/stlinkdeviceflasher.h"
 #include <htrun/mbedhosttestrunner.h>
+#include <provisioning/deviceprovisioning.h>
 
 namespace worlddirect {
 
@@ -11,16 +12,22 @@ namespace worlddirect {
     :QStateMachine(parent),
       m_ui(new MainWindow()),
       m_stflash(new StLinkDeviceFlasher()),
-      m_htrun(new MbedHostTestRunner())
+      m_htrun(new MbedHostTestRunner()),
+      m_provisioning(new DeviceProvisioning())
   {
     connect(this, &StateMachine::printData,                     m_ui, &MainWindow::printData);
 
     connect(m_ui, &MainWindow::targetConnect,                   m_stflash, &StLinkDeviceFlasher::connectToTarget);
-    connect(m_ui, &MainWindow::targetProgramTest,                   m_stflash, &StLinkDeviceFlasher::programTargetTest);
+    connect(m_ui, &MainWindow::targetProgramTest,               m_stflash, &StLinkDeviceFlasher::programTargetTest);
     connect(m_ui, &MainWindow::targetReset,                     m_stflash, &StLinkDeviceFlasher::resetTarget);
     connect(m_ui, &MainWindow::serialConnect,                   m_htrun, &MbedHostTestRunner::openSerial);
     connect(m_ui, &MainWindow::serialSendSync,                  m_htrun, &MbedHostTestRunner::serialSendSync);
     connect(m_ui, &MainWindow::targetProgramFirmware,           m_stflash, &StLinkDeviceFlasher::programTargetFirmware);
+    connect(m_ui, &MainWindow::requestToken,                    m_provisioning, &DeviceProvisioning::getToken);
+    // connect(m_ui, &MainWindow::registerDevice,                  m_provisioning, &DeviceProvisioning::);
+    // connect(m_ui, &MainWindow::getPsk,                          m_provisioning, &DeviceProvisioning::);
+    // connect(m_ui, &MainWindow::validateEncryption,              m_provisioning, &DeviceProvisioning::);
+    connect(m_ui, &MainWindow::downloadLatestFirmware,                     m_provisioning, &DeviceProvisioning::downloadLatestFirmware);
 
     connect(m_stflash, &StLinkDeviceFlasher::newLineReceived,   m_ui, &MainWindow::printData);
     connect(m_stflash, &StLinkDeviceFlasher::printData,         m_ui, &MainWindow::printData);
@@ -42,6 +49,8 @@ namespace worlddirect {
     connect(m_htrun, &MbedHostTestRunner::hardwareVersionReceived,        m_ui, &MainWindow::hardwareVersionReceived);
     connect(m_htrun, &MbedHostTestRunner::endpointNameReceived,        m_ui, &MainWindow::endpointNameReceived);
     connect(m_htrun, &MbedHostTestRunner::iccIdReceived,        m_ui, &MainWindow::iccIdReceived);
+
+    connect(m_provisioning, &DeviceProvisioning::printData,         m_ui, &MainWindow::printData);
 
     createStates();
   }

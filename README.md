@@ -1,10 +1,30 @@
 # PrometheusEndlineTester
 Endline Test Client for Prometheus Boards
 
+# building
+
+install dependencies
+~~~
+git clone https://github.com/Microsoft/vcpkg.git
+cd vcpkg
+./bootstrap-vcpkg.sh
+./vcpkg integrate install
+./vcpkg install curl:x64-windows
+./vcpkg install boost:x64-windows
+~~~
+
+build with
+~~~
+-DCMAKE_TOOLCHAIN_FILE=C:/dev/src/vcpkg/scripts/buildsystems/vcpkg.cmake
+~~~
+
+
 # credits
 
 ## code
 [QR-Code-generator](https://github.com/nayuki/QR-Code-generator) by [nayuki](https://github.com/nayuki)
+[libcurl](https://curl.haxx.se/libcurl/) by [The curl project](https://curl.haxx.se/)
+[mbed-os](https://github.com/ARMmbed/mbed-os.git) by [ARMmbed](https://github.com/ARMmbed)
 
 ## icons and logos
 

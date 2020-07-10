@@ -9,6 +9,7 @@ namespace worlddirect {
   class MainWindow;
   class StLinkDeviceFlasher;
   class MbedHostTestRunner;
+  class DeviceProvisioning;
 
   class StateMachine : public QStateMachine
   {
@@ -32,6 +33,7 @@ namespace worlddirect {
     MainWindow* m_ui;
     StLinkDeviceFlasher* m_stflash;
     MbedHostTestRunner *m_htrun;
+    DeviceProvisioning * m_provisioning;
   };
 
 } // namespace worlddirect

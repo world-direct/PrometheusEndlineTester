@@ -54,3 +54,4 @@ compile_commands.json
 # binary folder
 ./bin/*
 *.hex
+PrometheusEndlineTester/PrometheusEndlineTester.ini

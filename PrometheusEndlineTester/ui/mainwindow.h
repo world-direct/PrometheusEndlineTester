@@ -42,6 +42,11 @@ namespace worlddirect {
     void serialSendSync();
     void printNameplate();
     void targetProgramFirmware();
+    void requestToken();
+    void registerDevice();
+    void getPsk();
+    void validateEncryption();
+    void downloadLatestFirmware();
 
   public slots:
     void readSettings();
@@ -110,15 +115,23 @@ namespace worlddirect {
     QAction* m_serialSendSyncAct;
     QAction* m_printNameplateAct;
     QAction* m_programFWAct;
+    QAction* m_requestTokenAct;
+    QAction* m_registerDeviceAct;
+    QAction* m_getPskAct;
+    QAction* m_validateEncryptionAct;
+    QAction* m_getLatestFwAct;
+
 
     QMenu* m_fileMenu;
     QMenu* m_targetMenu;
     QMenu* m_serialMenu;
+    QMenu* m_provisioningMenu;
     QMenu* m_helpMenu;
 
     QToolBar* m_fileToolBar;
     QToolBar* m_targetToolBar;
     QToolBar* m_serialToolBar;
+    QToolBar* m_provisioningToolBar;
 
   };
 }

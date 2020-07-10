@@ -41,13 +41,20 @@ namespace worlddirect{
       m_serialSendSyncAct(Q_NULLPTR),
       m_printNameplateAct(Q_NULLPTR),
       m_programFWAct(Q_NULLPTR),
+      m_requestTokenAct(Q_NULLPTR),
+      m_registerDeviceAct(Q_NULLPTR),
+      m_getPskAct(Q_NULLPTR),
+      m_validateEncryptionAct(Q_NULLPTR),
+      m_getLatestFwAct(Q_NULLPTR),
       m_fileMenu(Q_NULLPTR),
       m_targetMenu(Q_NULLPTR),
       m_serialMenu(Q_NULLPTR),
+      m_provisioningMenu(Q_NULLPTR),
       m_helpMenu(Q_NULLPTR),
       m_fileToolBar(Q_NULLPTR),
       m_targetToolBar(Q_NULLPTR),
-      m_serialToolBar(Q_NULLPTR)
+      m_serialToolBar(Q_NULLPTR),
+      m_provisioningToolBar(Q_NULLPTR)
   {
     setContentsMargins(0,0,0,0);
     setWindowTitle(PROJECT_NAME);
@@ -194,7 +201,7 @@ namespace worlddirect{
 
   void MainWindow::hardwareVersionReceived(const QString &hwVer)
   {
-   m_testExplorer->hardwareVersionReceived(hwVer);
+    m_testExplorer->hardwareVersionReceived(hwVer);
   }
 
   void MainWindow::endpointNameReceived(const QString &epName)
@@ -268,6 +275,26 @@ namespace worlddirect{
     m_programFWAct->setStatusTip(tr("Program Firmware"));
     connect(m_programFWAct, &QAction::triggered, this, &MainWindow::targetProgramFirmware);
 
+    m_requestTokenAct = new QAction(tr("Request Token"));
+    m_requestTokenAct->setStatusTip(tr("Request Token"));
+    connect(m_requestTokenAct, &QAction::triggered, this, &MainWindow::requestToken);
+
+    m_registerDeviceAct = new QAction(tr("Register Device"));
+    m_registerDeviceAct->setStatusTip(tr("Registers the provided device with the contained metadata."));
+    connect(m_registerDeviceAct, &QAction::triggered, this, &MainWindow::registerDevice);
+
+    m_getPskAct = new QAction(tr("get PSK"));
+    m_getPskAct->setStatusTip(tr("Gets the pre shared key for the device with the prodived id."));
+    connect(m_getPskAct, &QAction::triggered, this, &MainWindow::getPsk);
+
+    m_validateEncryptionAct = new QAction(tr("validate Encryption"));
+    m_validateEncryptionAct->setStatusTip(tr("Validates if the client possess the correct pre shared key"));
+    connect(m_validateEncryptionAct, &QAction::triggered, this, &MainWindow::validateEncryption);
+
+    m_getLatestFwAct = new QAction(tr("download Firmware"));
+    m_getLatestFwAct->setStatusTip(tr("Gets the latest stable version of the firmware with the provided name."));
+    connect(m_getLatestFwAct, &QAction::triggered, this, &MainWindow::downloadLatestFirmware);
+
   }
 
   void MainWindow::createMenus()
@@ -291,6 +318,15 @@ namespace worlddirect{
     m_serialMenu = menuBar()->addMenu(tr("&Serial"));
     m_serialMenu->addAction(m_serialConnectAct);
     m_serialMenu->addAction(m_serialSendSyncAct);
+
+    m_provisioningMenu = menuBar()->addMenu(tr("&Provisioning"));
+    m_provisioningMenu->addAction(m_requestTokenAct);
+    m_provisioningMenu->addSeparator();
+    m_provisioningMenu->addAction(m_registerDeviceAct);
+    m_provisioningMenu->addAction(m_getPskAct);
+    m_provisioningMenu->addAction(m_validateEncryptionAct);
+    m_provisioningMenu->addSeparator();
+    m_provisioningMenu->addAction(m_getLatestFwAct);
 
     m_helpMenu = menuBar()->addMenu(tr("&Help"));
     m_helpMenu->addAction(m_aboutAct);
@@ -316,6 +352,14 @@ namespace worlddirect{
     m_serialToolBar->setObjectName("serialToolBar");
     m_serialToolBar->addAction(m_serialConnectAct);
     m_serialToolBar->addAction(m_serialSendSyncAct);
+
+    m_provisioningToolBar = addToolBar(tr("Provisioning"));
+    m_provisioningToolBar->setObjectName("m_provisioningToolBar");
+    m_provisioningToolBar->addAction(m_requestTokenAct);
+    m_provisioningToolBar->addAction(m_registerDeviceAct);
+    m_provisioningToolBar->addAction(m_getPskAct);
+    m_provisioningToolBar->addAction(m_validateEncryptionAct);
+    m_provisioningToolBar->addAction(m_getLatestFwAct);
   }
 
   void MainWindow::createStatusBar()

@@ -36,7 +36,7 @@ namespace worlddirect {
     void targetReset();
 
   public slots:
-    void newHostTestRun(const QString& hostTestRun);
+    //void newHostTestRun(const QString& hostTestRun);
 
     void connectToTarget();
     void programTargetTest();
