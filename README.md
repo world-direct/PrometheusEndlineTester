@@ -24,7 +24,7 @@ build with
 ## code
 [QR-Code-generator](https://github.com/nayuki/QR-Code-generator) by [nayuki](https://github.com/nayuki)
 [libcurl](https://curl.haxx.se/libcurl/) by [The curl project](https://curl.haxx.se/)
-
+[mbed-os](https://github.com/ARMmbed/mbed-os.git) by [ARMmbed](https://github.com/ARMmbed)
 
 ## icons and logos
 

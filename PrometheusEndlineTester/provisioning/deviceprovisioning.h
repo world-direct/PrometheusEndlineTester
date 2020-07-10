@@ -27,11 +27,12 @@ namespace worlddirect {
 
         void downloadLatestFirmware();
 
-        // void createDevice(const QString& epName, const QString& type, const QString& hwVer, const QString& iccId);
+        void createDevice(const QString& epName, const QString& type, const QString& hwVer, const QString& iccId);
 
         // void getPsk(const QString& epName);
 
         // void testPsk(const QString& epName);
+        void getAndValidatePsk(const QString& epName);
 
     private slots:
         void setToken(const QString &s);

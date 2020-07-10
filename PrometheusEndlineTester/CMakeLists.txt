@@ -33,6 +33,7 @@ endif()
 
 configure_file(${SETTINGS_FILE_NAME} ${SETTINGS_FILE_NAME} COPYONLY)
 configure_file(${STYLESHEET_FILE_NAME} ${STYLESHEET_FILE_NAME} COPYONLY)
+configure_file(${SEED_FILE_NAME} ${SEED_FILE_NAME} COPYONLY)
 
 add_executable(PrometheusEndlineTester
     WIN32

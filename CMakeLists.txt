@@ -11,6 +11,8 @@ string(APPEND SETTINGS_FILE_NAME ".ini")
 set(STYLESHEET_FILE_NAME ${PROJECT_NAME})
 string(APPEND STYLESHEET_FILE_NAME ".qss")
 
+set(SEED_FILE_NAME "seedfile")
+
 configure_file(config.h.in config.h @ONLY)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 

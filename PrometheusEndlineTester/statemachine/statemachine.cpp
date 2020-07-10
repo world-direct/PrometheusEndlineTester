@@ -59,7 +59,6 @@ namespace worlddirect {
   {
     QState* initial = new QState();
     connect(initial, &QState::entered, m_ui, &MainWindow::readSettings );
-    //connect(initial, &QState::entered, m_provisioning, &DeviceProvisioning::getToken );
 
     QState* startUi = new QState();
     connect(startUi, &QState::entered, m_ui, &MainWindow::show);

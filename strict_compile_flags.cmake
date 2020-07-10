@@ -4,7 +4,7 @@ add_compile_options(
     -Wpedantic
     -Wshadow
     -Wstrict-aliasing
-    -Werror
+    # -Werror
 )
 
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" )

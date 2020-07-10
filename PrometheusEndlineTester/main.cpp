@@ -8,9 +8,6 @@
 #include "PrometheusEndlineTester_global.h"
 #include <statemachine/statemachine.h>
 
-#include "identityclient.h"
-#include "deviceprovisioningapiclient.h"
-#include <iostream>
 
 int main(int argc, char *argv[])
 {
@@ -34,7 +31,6 @@ int main(int argc, char *argv[])
   auto res = a.exec();
   sm.stop();
 
-
-
   return res;
+
 }
