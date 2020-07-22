@@ -5,43 +5,50 @@
 
 namespace worlddirect {
 
-    class DeviceProvisioning : public QObject
-    {
-        Q_OBJECT
-    public:
-        explicit DeviceProvisioning(QObject *parent = nullptr);
-        DeviceProvisioning&  operator= ( const  DeviceProvisioning& ) = delete;
-        DeviceProvisioning&  operator= ( const  DeviceProvisioning&& ) = delete;
+  class DeviceProvisioning : public QObject
+  {
+    Q_OBJECT
+  public:
+    explicit DeviceProvisioning(QObject *parent = nullptr);
+    DeviceProvisioning&  operator= ( const  DeviceProvisioning& ) = delete;
+    DeviceProvisioning&  operator= ( const  DeviceProvisioning&& ) = delete;
 
-        DeviceProvisioning ( const  DeviceProvisioning& ) = delete;
-        DeviceProvisioning ( const  DeviceProvisioning&& ) = delete;
+    DeviceProvisioning ( const  DeviceProvisioning& ) = delete;
+    DeviceProvisioning ( const  DeviceProvisioning&& ) = delete;
 
-        virtual ~DeviceProvisioning()= default;
+    virtual ~DeviceProvisioning()= default;
 
-    signals:
-        void printData(const QByteArray &dt);
-        void resultReady(const QString &s);
+  signals:
+    void printData(const QByteArray &dt);
+    void resultReady(const QString &s);
 
-    public slots:
-        void getToken();
+    void successMessage(const QString& msg);
+    void errorMessage(const QString& msg);
 
-        void downloadLatestFirmware();
+    void pskReceived(const QString& key);
 
-        void createDevice(const QString& epName, const QString& type, const QString& hwVer, const QString& iccId);
+  public slots:
+    void getToken();
 
-        // void getPsk(const QString& epName);
+    void downloadLatestFirmware();
 
-        // void testPsk(const QString& epName);
-        void getAndValidatePsk(const QString& epName);
+    void createDevice(const QString& epName, const QString& type, const QString& hwVer, const QString& iccId);
 
-    private slots:
-        void setToken(const QString &s);
+    // void getPsk(const QString& epName);
+
+    // void testPsk(const QString& epName);
+    void getPsk(const QString& epName);
+    void validatePsk(const QString& epName, const QString &iccId, const QString &psk);
 
 
-    private:
-        QString m_token;
+  private slots:
+    void setToken(const QString &s);
 
-    };
+
+  private:
+    QString m_token;
+
+  };
 
 } // namespace worlddirect
 
