@@ -6,6 +6,8 @@
 #include <QCoreApplication>
 #include <QPrinter>
 #include <QPainter>
+#include <QPrintDialog>
+#include <QPageSetupDialog>
 
 namespace worlddirect {
 
@@ -95,7 +97,6 @@ namespace worlddirect {
     m_layout->addWidget(m_acLabel, 7, 2, 8, 2, Qt::AlignCenter);
 
     this->setLayout(m_layout);
-
   }
 
   void NamePlateWidget::setType(const QString &type)
@@ -122,27 +123,45 @@ namespace worlddirect {
   void NamePlateWidget::printNameplate()
   {
     QPrinter printer(QPrinter::HighResolution);
-    printer.setOutputFormat(QPrinter::PdfFormat);
-    printer.setOutputFileName(m_endpointIndicator->text()+".pdf");
-    printer.setPageMargins(0, 0, 0, 0, QPrinter::Millimeter);
-    printer.setFullPage(false);
-    //printer.setPageSize(QPrinter::A8);
-    printer.setPageSizeMM(QSizeF(100.0 , 30.0));
-    printer.setColorMode(QPrinter::GrayScale);
-    //printer.setOrientation(QPrinter::Landscape);
+    //    printer.setOutputFormat(QPrinter::PdfFormat);
+    //    printer.setOutputFileName(m_endpointIndicator->text()+".pdf");
+    //    printer.setPageMargins(0, 0, 0, 0, QPrinter::Millimeter);
+    //    printer.setFullPage(false);
+    //    printer.setPageSizeMM(QSizeF(100.0 , 30.0));
+    //    printer.setColorMode(QPrinter::GrayScale);
 
-    QPainter painter(&printer);
+    //    QPainter painter(&printer);
 
-    double w = double(this->width());
-    double h = double(this->height());
+    //    double w = double(this->width());
+    //    double h = double(this->height());
 
-    double xscale = printer.pageRect().width() / w;
-    double yscale = printer.pageRect().height() / h;
-    double scale = qMin(xscale, yscale);
-    painter.translate(printer.paperRect().center());
-    painter.scale(scale, scale);
-    painter.translate(-1 * w / 2, -1 * h/ 2);
-    this->render(&painter);
+    //    double xscale = printer.pageRect().width() / w;
+    //    double yscale = printer.pageRect().height() / h;
+    //    double scale = qMin(xscale, yscale);
+    //    painter.translate(printer.paperRect().center());
+    //    painter.scale(scale, scale);
+    //    painter.translate(-1 * w / 2, -1 * h/ 2);
+    //    this->render(&painter);
+
+    //    QPageSetupDialog pagesetdialog(&printer, this);
+    //    if(pagesetdialog.exec() == QDialog::Accepted){
+    //      }
+
+    QPrintDialog printDialog(&printer, this);
+    if (printDialog.exec() == QDialog::Accepted) {
+        QPainter painter(&printer);
+
+        double w = double(this->width());
+        double h = double(this->height());
+
+        double xscale = printer.pageRect().width() / w;
+        double yscale = printer.pageRect().height() / h;
+        double scale = qMin(xscale, yscale);
+        painter.translate(printer.paperRect().center());
+        painter.scale(scale, scale);
+        painter.translate(-1 * w / 2, -1 * h/ 2);
+        this->render(&painter);
+      }
 
   }
 

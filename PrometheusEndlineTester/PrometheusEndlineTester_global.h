@@ -3,7 +3,9 @@
 
 #include "config.h"
 
+constexpr const char* KEY_FLASHER_BASEPATH = "flasher/basePath";
 constexpr const char* KEY_FLASHER_PATHTOCMD = "flasher/pathToCmd";
+constexpr const char* KEY_FLASHER_PATHTODOCS = "flasher/pathToDocs";
 constexpr const char* KEY_FLASHER_WRITEARGS = "flasher/writeArgs";
 constexpr const char* KEY_FLASHER_ERASEARGS = "flasher/eraseArgs";
 constexpr const char* KEY_FLASHER_RESETARGS = "flasher/resetArgs";
@@ -17,6 +19,7 @@ constexpr const char* KEY_SERIAL_DATA = "serial/data";
 constexpr const char* KEY_SERIAL_STOP = "serial/stop";
 constexpr const char* KEY_SERIAL_PARITY = "serial/parity";
 constexpr const char* KEY_SERIAL_FLOWCTRL = "serial/flowctrl";
+constexpr const char* KEY_SERIAL_SYNC_TIMEOUT = "serial/sync_timeout";
 
 constexpr const char* KEY_IDENTITY_SERVER = "identity/server";
 constexpr const char* KEY_IDENTITY_CLIENT = "identity/client";
@@ -52,6 +55,8 @@ constexpr const char* GREENTEA_KV_SEPERATOR = ";";
 constexpr const char* GREENTEA_KV_POSTAMBLE = "}}";
 
 constexpr const char* GREENTEA_MSG_PREAMBLE =">>>";
+
+constexpr const char* GREENTEA_MSG_ENDL ="\r\n";
 
 constexpr const char* CO1_FUNCTIONAL_ENDLINE_TEST_TYPE= "__type";
 constexpr const char* CO1_FUNCTIONAL_ENDLINE_TEST_HWVER= "__hw_ver";

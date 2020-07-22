@@ -2,6 +2,10 @@
 
 #include <QBoxLayout>
 #include <QLabel>
+#include <QPainter>
+#include <QPrintDialog>
+#include <QPrinter>
+#include <QThread>
 #include <QTreeView>
 
 #include "dcplatewidget.h"
@@ -24,18 +28,18 @@ namespace worlddirect {
     m_layout->setVerticalSpacing(0);
     this->setMaximumSize(560,this->maximumHeight());
 
-    m_testSetup->setAutoFillBackground(true);
-    auto testSetupLayout = new QGridLayout();
-    testSetupLayout->setMargin(0);
-    testSetupLayout->setHorizontalSpacing(0);
-    testSetupLayout->setVerticalSpacing(0);
-    testSetupLayout->addWidget(new QLabel(tr("id:")), 0, 0);
-    testSetupLayout->addWidget(new QLabel(tr("type:")), 1, 0);
-    testSetupLayout->addWidget(new QLabel(tr("version:")), 2, 0);
-    testSetupLayout->addWidget(new QLabel(tr("iccid:")), 3, 0);
-    testSetupLayout->addWidget(new QLabel(tr("psk:")), 4, 0);
-    m_testSetup->setLayout(testSetupLayout);
-    m_layout->addWidget(m_testSetup);
+    //    m_testSetup->setAutoFillBackground(true);
+    //    auto testSetupLayout = new QGridLayout();
+    //    testSetupLayout->setMargin(0);
+    //    testSetupLayout->setHorizontalSpacing(0);
+    //    testSetupLayout->setVerticalSpacing(0);
+    //    testSetupLayout->addWidget(new QLabel(tr("id:")), 0, 0);
+    //    testSetupLayout->addWidget(new QLabel(tr("type:")), 1, 0);
+    //    testSetupLayout->addWidget(new QLabel(tr("version:")), 2, 0);
+    //    testSetupLayout->addWidget(new QLabel(tr("iccid:")), 3, 0);
+    //    testSetupLayout->addWidget(new QLabel(tr("psk:")), 4, 0);
+    //    m_testSetup->setLayout(testSetupLayout);
+    //    m_layout->addWidget(m_testSetup);
 
     auto line = new QFrame();
     line->setFrameShape(QFrame::HLine);
@@ -148,8 +152,32 @@ namespace worlddirect {
 
   void TestExplorer::printNameplate()
   {
-   m_namePlate->printNameplate();
-   m_dcPlate->printNameplate();
+    QList<QWidget*> printwid = {m_namePlate, m_dcPlate};
+    QPrinter printer(QPrinter::HighResolution);
+
+    QPrintDialog printDialog(&printer, this);
+    if (printDialog.exec() == QDialog::Accepted) {
+        for(auto wid : printwid){
+            QPainter painter(&printer);
+
+            double w = double(wid->width());
+            double h = double(wid->height());
+
+            double xscale = printer.pageRect().width() / w;
+            double yscale = printer.pageRect().height() / h;
+            double scale = qMin(xscale, yscale);
+            painter.translate(printer.paperRect().center());
+            painter.scale(scale, scale);
+            painter.translate(-1 * w / 2, -1 * h/ 2);
+            wid->render(&painter);
+          }
+      }
+  }
+
+  void TestExplorer::clear()
+  {
+    auto model = dynamic_cast<TestCaseSumaryModel*>(m_testCases->model());
+    model->clear();
   }
 
 } // namespace worlddirect

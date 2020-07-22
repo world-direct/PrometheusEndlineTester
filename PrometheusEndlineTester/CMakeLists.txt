@@ -55,6 +55,7 @@ add_executable(PrometheusEndlineTester
     ui/model/testcase.cpp
     ui/widgets/dcplatewidget.cpp
     provisioning/deviceprovisioning.cpp
+    deviceinformation/deviceinformation.cpp
     )
 
 target_link_libraries(PrometheusEndlineTester PRIVATE Qt5::PrintSupport Qt5::Widgets Qt5::SerialPort QRCodeGenerator DeviceProvisioningAPIClent )

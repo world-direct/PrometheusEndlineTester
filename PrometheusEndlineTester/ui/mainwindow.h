@@ -34,12 +34,14 @@ namespace worlddirect {
 
   signals:
     void printData(const QByteArray &dt);
-    void targetNew();
+    void clearScreen();
+
     void targetConnect();
     void targetProgramTest();
     void targetReset();
     void serialConnect();
     void serialSendSync();
+    void serialSendPsk();
     void printNameplate();
     void targetProgramFirmware();
     void requestToken();
@@ -47,21 +49,13 @@ namespace worlddirect {
     void getPsk();
     void validateEncryption();
     void downloadLatestFirmware();
+    void prepareTest();
+    void runTest();
+    void provisionDevice();
+    void newTarget();
 
   public slots:
     void readSettings();
-
-    void setNewTargetState();
-    void setTargetNotConnectedState();
-    void setTargetConnectedState();
-    void setTargetNotProgrammedState();
-    void setTargetProgrammedState();
-    void setTargetNotResetState();
-    void setTargetResetState();
-    void setSerialNotConnectedState();
-    void setSerialConnectedState();
-    void setSerialNotSyncedState();
-    void setSerialSyncedState();
 
     void newHostTestRun(const QString& hostTestRun);
     void newHostTest(const QString& hostTestRun, const QString& hostTest);
@@ -79,6 +73,8 @@ namespace worlddirect {
     void endpointNameReceived(const QString& epName);
     void iccIdReceived(const QString& iccId);
 
+    void nameplateValid();
+
   private:
     void createActions();
     void createMenus();
@@ -86,11 +82,11 @@ namespace worlddirect {
     void createStatusBar();
 
   private slots:
-    void newFile();
-    void open();
-    bool save();
+    //void newFile();
+    //void open();
+    //bool save();
 
-    bool saveAs();
+    //bool saveAs();
     void about();
 
   protected:
@@ -113,6 +109,7 @@ namespace worlddirect {
     QAction* m_resetAct;
     QAction* m_serialConnectAct;
     QAction* m_serialSendSyncAct;
+    QAction* m_serialSendPskAct;
     QAction* m_printNameplateAct;
     QAction* m_programFWAct;
     QAction* m_requestTokenAct;
@@ -120,18 +117,23 @@ namespace worlddirect {
     QAction* m_getPskAct;
     QAction* m_validateEncryptionAct;
     QAction* m_getLatestFwAct;
-
+    QAction* m_prepareTestAct;
+    QAction* m_runTestAct;
+    QAction* m_provisionDeviceAct;
+    QAction* m_newTargetAct;
 
     QMenu* m_fileMenu;
     QMenu* m_targetMenu;
     QMenu* m_serialMenu;
     QMenu* m_provisioningMenu;
+    QMenu* m_testMenu;
     QMenu* m_helpMenu;
 
     QToolBar* m_fileToolBar;
     QToolBar* m_targetToolBar;
     QToolBar* m_serialToolBar;
     QToolBar* m_provisioningToolBar;
+    QToolBar* m_testToolBar;
 
   };
 }

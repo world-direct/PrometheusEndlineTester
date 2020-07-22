@@ -7,54 +7,57 @@
 
 namespace worlddirect {
 
-    DcPlateWidget::DcPlateWidget(QWidget *parent)
-        : QWidget(parent),
-          m_layout(new QGridLayout(this)),
-          m_dcLabel(new QLabel())
-    {
+  DcPlateWidget::DcPlateWidget(QWidget *parent)
+    : QWidget(parent)
+  {
 
-            setMinimumWidth(560);
-            setMaximumWidth(560);
-            setMinimumHeight(168);
-            setMaximumHeight(168);
+    setMinimumWidth(560);
+    setMaximumWidth(560);
+    setMinimumHeight(168);
+    setMaximumHeight(168);
 
-            QPixmap acLabelPix(":/PrometheusEndlineTester/images/LabelDC.png");
-            m_dcLabel->setPixmap(acLabelPix.scaled(168*3, 168, Qt::KeepAspectRatio));
+    auto m_layout = new QGridLayout();
+    auto m_dcLabel = new QLabel();
 
-            m_layout->setMargin(0);
-            m_layout->setHorizontalSpacing(0);
-            m_layout->setVerticalSpacing(0);
+    QPixmap acLabelPix(":/PrometheusEndlineTester/images/LabelDC.png");
+    m_dcLabel->setPixmap(acLabelPix.scaled(168*3, 168, Qt::KeepAspectRatio));
 
-            m_layout->addWidget(m_dcLabel,0,0,1,1,Qt::AlignCenter);
+    m_layout->setMargin(0);
+    m_layout->setHorizontalSpacing(0);
+    m_layout->setVerticalSpacing(0);
 
-    }
+    m_layout->addWidget(m_dcLabel,0,0,1,1,Qt::AlignCenter);
 
-    void DcPlateWidget::printNameplate()
-    {
-            QPrinter printer(QPrinter::HighResolution);
-            printer.setOutputFormat(QPrinter::PdfFormat);
-            printer.setOutputFileName("DcPlate.pdf");
-            printer.setPageMargins(0, 0, 0, 0, QPrinter::Millimeter);
-            printer.setFullPage(false);
-            //printer.setPageSize(QPrinter::A8);
-            printer.setPageSizeMM(QSizeF(100.0 , 30.0));
-            printer.setColorMode(QPrinter::Color);
-            //printer.setOrientation(QPrinter::Landscape);
+    setLayout(m_layout);
 
-            QPainter painter(&printer);
+  }
 
-            double w = double(this->width());
-            double h = double(this->height());
+  void DcPlateWidget::printNameplate()
+  {
+    QPrinter printer(QPrinter::HighResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setOutputFileName("DcPlate.pdf");
+    printer.setPageMargins(0, 0, 0, 0, QPrinter::Millimeter);
+    printer.setFullPage(false);
+    //printer.setPageSize(QPrinter::A8);
+    printer.setPageSizeMM(QSizeF(100.0 , 30.0));
+    printer.setColorMode(QPrinter::Color);
+    //printer.setOrientation(QPrinter::Landscape);
 
-            double xscale = printer.pageRect().width() / w;
-            double yscale = printer.pageRect().height() / h;
-            double scale = qMin(xscale, yscale);
-            painter.translate(printer.paperRect().center());
-            painter.scale(scale, scale);
-            painter.translate(-1 * w / 2, -1 * h/ 2);
-            this->render(&painter);
+    QPainter painter(&printer);
 
-    }
+    double w = double(this->width());
+    double h = double(this->height());
+
+    double xscale = printer.pageRect().width() / w;
+    double yscale = printer.pageRect().height() / h;
+    double scale = qMin(xscale, yscale);
+    painter.translate(printer.paperRect().center());
+    painter.scale(scale, scale);
+    painter.translate(-1 * w / 2, -1 * h/ 2);
+    this->render(&painter);
+
+  }
 
 
 } // namespace worlddirect

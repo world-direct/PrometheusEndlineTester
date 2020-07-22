@@ -3,13 +3,6 @@
 
 #include <QWidget>
 
-QT_BEGIN_NAMESPACE
-
-class QLabel;
-class QGridLayout;
-
-QT_END_NAMESPACE
-
 namespace worlddirect {
 
   class DcPlateWidget : public QWidget
@@ -28,9 +21,6 @@ namespace worlddirect {
   public slots:
     void printNameplate();
 
-  private:
-    QGridLayout* m_layout;
-    QLabel* m_dcLabel;
   };
 
 } // namespace worlddirect

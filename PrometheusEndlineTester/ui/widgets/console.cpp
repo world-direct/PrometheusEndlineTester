@@ -23,7 +23,6 @@ namespace worlddirect {
     bar->setValue(bar->maximum());
   }
 
-
   void Console::keyPressEvent(QKeyEvent *e)
   {
     switch (e->key()) {

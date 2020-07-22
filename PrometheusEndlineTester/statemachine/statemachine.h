@@ -10,6 +10,7 @@ namespace worlddirect {
   class StLinkDeviceFlasher;
   class MbedHostTestRunner;
   class DeviceProvisioning;
+  class DeviceInformation;
 
   class StateMachine : public QStateMachine
   {
@@ -26,14 +27,25 @@ namespace worlddirect {
 
     void createStates();
 
+  public slots:
+    void successMessage(const QString& msg);
+    void errrorMessage(const QString& msg);
+
   signals:
     void printData(const QByteArray &dt);
+    void clearScreen();
+
+    void success();
+    void error();
+
+    void newTarget();
 
   private:
     MainWindow* m_ui;
     StLinkDeviceFlasher* m_stflash;
     MbedHostTestRunner *m_htrun;
     DeviceProvisioning * m_provisioning;
+    DeviceInformation* m_deviceInformation;
   };
 
 } // namespace worlddirect

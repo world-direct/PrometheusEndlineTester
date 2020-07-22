@@ -48,6 +48,8 @@ namespace worlddirect {
 
     void printNameplate();
 
+    void clear();
+
   private:
     QWidget* m_testSetup;
     NamePlateWidget* m_namePlate;

@@ -39,6 +39,7 @@ namespace worlddirect{
       m_resetAct(Q_NULLPTR),
       m_serialConnectAct(Q_NULLPTR),
       m_serialSendSyncAct(Q_NULLPTR),
+      m_serialSendPskAct(Q_NULLPTR),
       m_printNameplateAct(Q_NULLPTR),
       m_programFWAct(Q_NULLPTR),
       m_requestTokenAct(Q_NULLPTR),
@@ -46,15 +47,21 @@ namespace worlddirect{
       m_getPskAct(Q_NULLPTR),
       m_validateEncryptionAct(Q_NULLPTR),
       m_getLatestFwAct(Q_NULLPTR),
+      m_prepareTestAct(Q_NULLPTR),
+      m_runTestAct(Q_NULLPTR),
+      m_provisionDeviceAct(Q_NULLPTR),
+      m_newTargetAct(Q_NULLPTR),
       m_fileMenu(Q_NULLPTR),
       m_targetMenu(Q_NULLPTR),
       m_serialMenu(Q_NULLPTR),
       m_provisioningMenu(Q_NULLPTR),
+      m_testMenu(Q_NULLPTR),
       m_helpMenu(Q_NULLPTR),
       m_fileToolBar(Q_NULLPTR),
       m_targetToolBar(Q_NULLPTR),
       m_serialToolBar(Q_NULLPTR),
-      m_provisioningToolBar(Q_NULLPTR)
+      m_provisioningToolBar(Q_NULLPTR),
+      m_testToolBar(Q_NULLPTR)
   {
     setContentsMargins(0,0,0,0);
     setWindowTitle(PROJECT_NAME);
@@ -74,11 +81,16 @@ namespace worlddirect{
     m_layout->addWidget(m_testExplorer,0,1);
 
     connect(this, &MainWindow::printData, m_console, &Console::printData);
+    connect(this, &MainWindow::clearScreen, m_console, &Console::clear);
+    connect(this, &MainWindow::newTarget, m_testExplorer, &TestExplorer::clear);
+
+    m_testExplorer->clear();
 
     createActions();
     createMenus();
     createToolBars();
     createStatusBar();
+
 
   }
 
@@ -89,60 +101,6 @@ namespace worlddirect{
     restoreState(settings.value(KEY_UI_WINDOWSTATE).toByteArray());
   }
 
-  void MainWindow::setNewTargetState()
-  {
-
-  }
-
-  void MainWindow::setTargetNotConnectedState()
-  {
-
-  }
-
-  void MainWindow::setTargetConnectedState()
-  {
-
-  }
-
-  void MainWindow::setTargetNotProgrammedState()
-  {
-
-  }
-
-  void MainWindow::setTargetProgrammedState()
-  {
-
-  }
-
-  void MainWindow::setTargetNotResetState()
-  {
-
-  }
-
-  void MainWindow::setTargetResetState()
-  {
-
-  }
-
-  void MainWindow::setSerialNotConnectedState()
-  {
-
-  }
-
-  void MainWindow::setSerialConnectedState()
-  {
-
-  }
-
-  void MainWindow::setSerialNotSyncedState()
-  {
-
-  }
-
-  void MainWindow::setSerialSyncedState()
-  {
-
-  }
 
   void MainWindow::newHostTestRun(const QString &hostTestRun)
   {
@@ -214,28 +172,34 @@ namespace worlddirect{
     m_testExplorer->iccIdReceived(iccId);
   }
 
+  void MainWindow::nameplateValid()
+  {
+   m_testExplorer->printNameplate();
+  }
+
   void MainWindow::createActions()
   {
     m_newAct = new QAction(tr("&New"), this);
     m_newAct->setShortcuts(QKeySequence::New);
     m_newAct->setStatusTip(tr("Create a new file"));
-    connect(m_newAct, &QAction::triggered, this, &MainWindow::newFile);
-    connect(m_newAct, &QAction::triggered, this, &MainWindow::targetNew);
+    connect(m_newAct, &QAction::triggered, this, &MainWindow::newTarget);
 
-    m_openAct = new QAction(tr("&Open..."), this);
-    m_openAct->setShortcuts(QKeySequence::Open);
-    m_openAct->setStatusTip(tr("Open an existing file"));
-    connect(m_openAct, &QAction::triggered, this, &MainWindow::open);
+//    m_openAct = new QAction(tr("&Open..."), this);
+//    m_openAct->setShortcuts(QKeySequence::Open);
+//    m_openAct->setStatusTip(tr("Open an existing file"));
+//    connect(m_openAct, &QAction::triggered, this, &MainWindow::open);
+//    m_openAct->setDisabled(true);
 
-    m_saveAct = new QAction(tr("&Save"), this);
-    m_saveAct->setShortcuts(QKeySequence::Save);
-    m_saveAct->setStatusTip(tr("Save the document to disk"));
-    connect(m_saveAct, &QAction::triggered, this, &MainWindow::save);
+//    m_saveAct = new QAction(tr("&Save"), this);
+//    m_saveAct->setShortcuts(QKeySequence::Save);
+//    m_saveAct->setStatusTip(tr("Save the document to disk"));
+//    connect(m_saveAct, &QAction::triggered, this, &MainWindow::save);
+//    m_saveAct->setDisabled(true);
 
-    m_saveAsAct = new QAction(tr("Save &As..."), this);
-    m_saveAsAct->setShortcuts(QKeySequence::SaveAs);
-    m_saveAsAct->setStatusTip(tr("Save the document under a new name"));
-    connect(m_saveAsAct, &QAction::triggered, this, &MainWindow::saveAs);
+//    m_saveAsAct = new QAction(tr("Save &As..."), this);
+//    m_saveAsAct->setShortcuts(QKeySequence::SaveAs);
+//    m_saveAsAct->setStatusTip(tr("Save the document under a new name"));
+//    connect(m_saveAsAct, &QAction::triggered, this, &MainWindow::saveAs);
 
     m_exitAct = new QAction(tr("E&xit"), this);
     m_exitAct->setShortcuts(QKeySequence::Quit);
@@ -266,10 +230,14 @@ namespace worlddirect{
     m_serialSendSyncAct->setStatusTip(tr("send sync message"));
     connect(m_serialSendSyncAct, &QAction::triggered, this, &MainWindow::serialSendSync);
 
+    m_serialSendPskAct = new QAction(tr("Send PSK"), this);
+    m_serialSendPskAct->setStatusTip(tr("send psk to device"));
+    connect(m_serialSendPskAct, &QAction::triggered, this, &MainWindow::serialSendPsk);
+
     m_printNameplateAct = new QAction(tr("Print Nameplate"));
     m_printNameplateAct->setStatusTip(tr("Print Nameplate"));
     connect(m_printNameplateAct, &QAction::triggered, this, &MainWindow::printNameplate);
-    connect(m_printNameplateAct, &QAction::triggered, m_testExplorer, &TestExplorer::printNameplate);
+    //connect(m_printNameplateAct, &QAction::triggered, m_testExplorer, &TestExplorer::printNameplate);
 
     m_programFWAct = new QAction(tr("Program Firmware"));
     m_programFWAct->setStatusTip(tr("Program Firmware"));
@@ -295,15 +263,31 @@ namespace worlddirect{
     m_getLatestFwAct->setStatusTip(tr("Gets the latest stable version of the firmware with the provided name."));
     connect(m_getLatestFwAct, &QAction::triggered, this, &MainWindow::downloadLatestFirmware);
 
+    m_prepareTestAct = new QAction(tr("prepare Test"));
+    m_prepareTestAct->setStatusTip(tr(""));
+    connect(m_prepareTestAct, &QAction::triggered, this, &MainWindow::prepareTest);
+
+    m_runTestAct = new QAction(tr("run Test"));
+    m_runTestAct->setStatusTip(tr(""));
+    connect(m_runTestAct, &QAction::triggered, this, &MainWindow::runTest);
+
+    m_provisionDeviceAct = new QAction(tr("provision Device"));
+    m_provisionDeviceAct->setStatusTip(tr(""));
+    connect(m_provisionDeviceAct, &QAction::triggered, this, &MainWindow::provisionDevice);
+
+    m_newTargetAct = new QAction(tr("new Target"));
+    m_newTargetAct->setStatusTip(tr(""));
+    connect(m_newTargetAct, &QAction::triggered, this, &MainWindow::newTarget);
+
   }
 
   void MainWindow::createMenus()
   {
     m_fileMenu = menuBar()->addMenu(tr("&File"));
     m_fileMenu->addAction(m_newAct);
-    m_fileMenu->addAction(m_openAct);
-    m_fileMenu->addAction(m_saveAct);
-    m_fileMenu->addAction(m_saveAsAct);
+//    m_fileMenu->addAction(m_openAct);
+//    m_fileMenu->addAction(m_saveAct);
+//    m_fileMenu->addAction(m_saveAsAct);
     m_fileMenu->addSeparator();
     m_fileMenu->addAction(m_printNameplateAct);
     m_fileMenu->addSeparator();
@@ -318,6 +302,7 @@ namespace worlddirect{
     m_serialMenu = menuBar()->addMenu(tr("&Serial"));
     m_serialMenu->addAction(m_serialConnectAct);
     m_serialMenu->addAction(m_serialSendSyncAct);
+    m_serialMenu->addAction(m_serialSendPskAct);
 
     m_provisioningMenu = menuBar()->addMenu(tr("&Provisioning"));
     m_provisioningMenu->addAction(m_requestTokenAct);
@@ -328,6 +313,12 @@ namespace worlddirect{
     m_provisioningMenu->addSeparator();
     m_provisioningMenu->addAction(m_getLatestFwAct);
 
+    m_testMenu = menuBar()->addMenu(tr("&Test"));
+    m_testMenu->addAction(m_prepareTestAct);
+    m_testMenu->addAction(m_runTestAct);
+    m_testMenu->addAction(m_provisionDeviceAct);
+    m_testMenu->addAction(m_newTargetAct);
+
     m_helpMenu = menuBar()->addMenu(tr("&Help"));
     m_helpMenu->addAction(m_aboutAct);
   }
@@ -337,8 +328,8 @@ namespace worlddirect{
     m_fileToolBar = addToolBar(tr("File"));
     m_fileToolBar->setObjectName("fileToolBar");
     m_fileToolBar->addAction(m_newAct);
-    m_fileToolBar->addAction(m_openAct);
-    m_fileToolBar->addAction(m_saveAct);
+//    m_fileToolBar->addAction(m_openAct);
+//    m_fileToolBar->addAction(m_saveAct);
     m_fileToolBar->addAction(m_printNameplateAct);
 
     m_targetToolBar = addToolBar(tr("Target"));
@@ -352,39 +343,28 @@ namespace worlddirect{
     m_serialToolBar->setObjectName("serialToolBar");
     m_serialToolBar->addAction(m_serialConnectAct);
     m_serialToolBar->addAction(m_serialSendSyncAct);
+    m_serialToolBar->addAction(m_serialSendPskAct);
 
     m_provisioningToolBar = addToolBar(tr("Provisioning"));
-    m_provisioningToolBar->setObjectName("m_provisioningToolBar");
+    m_provisioningToolBar->setObjectName("provisioningToolBar");
     m_provisioningToolBar->addAction(m_requestTokenAct);
     m_provisioningToolBar->addAction(m_registerDeviceAct);
     m_provisioningToolBar->addAction(m_getPskAct);
     m_provisioningToolBar->addAction(m_validateEncryptionAct);
     m_provisioningToolBar->addAction(m_getLatestFwAct);
+
+    m_testToolBar = addToolBar(tr("Test"));
+    m_testToolBar->setObjectName("testToolBar");
+    m_testToolBar->addAction(m_prepareTestAct);
+    m_testToolBar->addAction(m_runTestAct);
+    m_testToolBar->addAction(m_provisionDeviceAct);
+    m_testToolBar->addAction(m_newTargetAct);
+
   }
 
   void MainWindow::createStatusBar()
   {
     statusBar()->showMessage(tr("Ready"));
-  }
-
-  void MainWindow::newFile()
-  {
-
-  }
-
-  void MainWindow::open()
-  {
-
-  }
-
-  bool MainWindow::save()
-  {
-    return false;
-  }
-
-  bool MainWindow::saveAs()
-  {
-    return false;
   }
 
   void MainWindow::about()
