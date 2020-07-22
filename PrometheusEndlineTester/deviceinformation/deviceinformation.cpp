@@ -27,11 +27,6 @@ namespace worlddirect {
     setEndpointName(QString());
     setHardwareVersion(QString());
     setPSK(QString());
-
-//    setEndpointName("CO139X92IMH9154P");
-//    setIccId("123345552342343");
-//    setHardwareVersion("2.1.0.12345");
-//    setType("Wd IoT Coreboard");
   }
 
   bool DeviceInformation::valid() const
