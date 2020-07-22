@@ -20,6 +20,9 @@ add_library(DeviceProvisioningAPIClent
     mbedcrypto.cpp
     base64.cpp
     mbed_assert.c
+    httpcodeutils.cpp
+    basehex.cpp
+    ../mbed-os/drivers/source/MbedCRC.cpp
     ../mbed-os/features/mbedtls/src/aes.c
     ../mbed-os/features/mbedtls/src/aesni.c
     ../mbed-os/features/mbedtls/src/arc4.c
@@ -144,6 +147,7 @@ add_definitions(
     -DMBEDTLS_PSA_ITS_FILE_C
     -DMBEDTLS_FS_IO
     -DMBEDTLS_PLATFORM_STD_NV_SEED_FILE="./seedfile"
+    -DMBED_CRC_TABLE_SIZE=256
     )
 
 target_link_libraries(DeviceProvisioningAPIClent

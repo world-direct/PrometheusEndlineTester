@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <string>
 
+#include "crypto_types.h"
+
 namespace worlddirect {
 
   class MbedCrypto
@@ -28,6 +30,18 @@ namespace worlddirect {
     void encryptWithSymmetricCiphersBase64(const std::string& _plaintext, const std::string& _key, std::string& _cyphertext_b64);
     void decryptWithSymmetricCiphersBase64(const std::string& _cyphertext_b64, const std::string& _key, std::string& _plaintext);
 
+    bool hadError()const;
+    std::string errorMessage()const;
+
+  private:
+    void resetAllErrors();
+    void setPsaError(std::string msg);
+    std::string psacode2status(psa_status_t code);
+
+
+  private:
+    psa_status_t m_status;
+    std::string m_lastErrorMessage;
   };
 
 } // namespace worlddirect
