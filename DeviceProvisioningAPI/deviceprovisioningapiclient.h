@@ -34,16 +34,28 @@ namespace worlddirect {
 
     void FirmwareGet(const std::string& name, const std::string& filename);
 
+    bool hadError()const;
+    std::string errorMessage()const;
+
   private:
     static size_t curlWriteFuncCB(char *ptr, size_t size, size_t nmemb, std::iostream *in);
     static size_t curlReadFuncCB(char *ptr, size_t size, size_t nmemb, std::stringstream * out);
 
+    void setCurlError();
+    void setHttpError();
+
+    void resetAllErrors();
 
   private:
     std::stringstream m_stringBuffer;
     CURL * m_curl;
     struct curl_slist *m_headers;
     std::string m_apiUrl;
+
+    CURLcode m_lastCurlCode;
+    long m_lastHttpCode;
+
+    std::string m_lastErrorMessage;
 
   };
 

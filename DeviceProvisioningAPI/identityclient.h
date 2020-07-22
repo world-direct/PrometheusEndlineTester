@@ -24,15 +24,25 @@ namespace worlddirect {
 
   public:
     Token RequestToken(const std::string& clientId, const std::string& clientSecret, const std::string& scope );
+    bool hadError()const;
+    std::string errorMessage()const;
 
   private:
     static size_t curlWriteFuncCB(char *ptr, size_t size, size_t nmemb, IdentityClient *_this);
     size_t curlWriteFunc(char *ptr, size_t size, size_t nmemb);
 
+    void setCurlError();
+    void setHttpError();
+
   private:
     std::stringstream m_stringBuffer;
     CURL * m_curl;
     struct curl_slist *m_headers;
+
+    CURLcode m_lastCurlCode;
+    long m_lastHttpCode;
+
+    std::string m_lastErrorMessage;
   };
 
 } // namespace worlddirect
