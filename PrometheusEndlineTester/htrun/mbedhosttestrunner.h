@@ -4,6 +4,7 @@
 #include<QSerialPort>
 #include<QString>
 #include<QByteArray>
+#include <QTimer>
 
 
 namespace worlddirect {
@@ -60,15 +61,20 @@ namespace worlddirect {
     void passedHostTestRun(const QString& hostTestRun);
     void failedHostTestRun(const QString& hostTestRun);
 
+    void successMessage(const QString& msg);
+    void errorMessage(const QString& msg);
 
   public slots:
     void openSerial();
     void serialSendSync();
     void serialSendSyncUuid(const QUuid &uuid);
 
+    void sendPSK(const QString& key);
+
   private slots:
     void readSerialData();
     void parseNewLine(const QByteArray &dt);
+    void syncTimedOut();
 
   private:
     qint64 sendKv(const QByteArray &key, const QByteArray &val);
@@ -84,15 +90,18 @@ namespace worlddirect {
     void newHostTestReceived(const QString& hostTestName);
     void newTestCaseReceived(const QString& testCaseName);
 
-  private:
     qint64 writePreamble();
     qint64 writeString(const QByteArray &str);
     qint64 writeSeperator();
     qint64 writePostamble();
+    qint64 writeEndl();
+
+    QString errorCode2Msg()const;
 
   private:
     QString m_testRun;
     QString m_hostTest;
+    QTimer m_syncTimeout;
 
   };
 

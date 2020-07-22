@@ -3,16 +3,19 @@
 #include <QUuid>
 
 #include "PrometheusEndlineTester_global.h"
+#include "basehex.h"
 
 
 namespace worlddirect {
   MbedHostTestRunner::MbedHostTestRunner(QObject* parent)
     :QSerialPort(parent),
       m_testRun("UNKONWN TEST RUN"),
-      m_hostTest("UNKNOWN HOST TEST")
+      m_hostTest("UNKNOWN HOST TEST"),
+      m_syncTimeout(this)
   {
     connect(this, &QSerialPort::readyRead, this, &MbedHostTestRunner::readSerialData);
     connect(this, &MbedHostTestRunner::newLineReceived, this, &MbedHostTestRunner::parseNewLine);
+    connect(&m_syncTimeout, &QTimer::timeout, this, &MbedHostTestRunner::syncTimedOut);
   }
 
   MbedHostTestRunner::~MbedHostTestRunner()
@@ -41,8 +44,10 @@ namespace worlddirect {
     setFlowControl(static_cast<QSerialPort::FlowControl>(flowControl));
 
     if (open(QIODevice::ReadWrite) == false) {
+        emit errorMessage("could not open serial port: "+errorCode2Msg());
         return;
       }
+    emit successMessage("Serial Port successfully opened");
     emit serialOpened();
   }
 
@@ -55,6 +60,22 @@ namespace worlddirect {
   void MbedHostTestRunner::serialSendSyncUuid(const QUuid &uuid)
   {
     sendSync(uuid);
+  }
+
+  void MbedHostTestRunner::sendPSK(const QString &key)
+  {
+    auto psk = key.toStdString();
+    auto data =  BaseHex::EncodeWithCrc(psk);
+
+    auto res = write(data.c_str());
+    if(res < 0 ){
+        return;
+      }
+
+    res = writeEndl();
+    if(res < 0 ){
+        return;
+      }
   }
 
   void MbedHostTestRunner::readSerialData()
@@ -84,6 +105,12 @@ namespace worlddirect {
 
   }
 
+  void MbedHostTestRunner::syncTimedOut()
+  {
+    auto msg = QString("Host Test timed out: did not receive sync within timeout(%1)").arg(m_syncTimeout.interval());
+    emit errorMessage(msg);
+  }
+
   qint64 MbedHostTestRunner::sendString(const QByteArray &str)
   {
     if(isOpen() == false){
@@ -95,7 +122,7 @@ namespace worlddirect {
       }
     auto cnt = res;
 
-    res = write("\r\n");
+    res = write(GREENTEA_MSG_ENDL);
     if(res < 0 ){
         return res;
       }
@@ -112,7 +139,13 @@ namespace worlddirect {
 
   qint64 MbedHostTestRunner::sendSync(const QByteArray &uuid)
   {
-    return sendKv(GREENTEA_TEST_ENV_SYNC, uuid);
+    QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
+    auto sync_timeout_duration = settings.value(KEY_SERIAL_SYNC_TIMEOUT).toInt();
+    m_syncTimeout.setInterval(sync_timeout_duration);
+    m_syncTimeout.setSingleShot(true);
+    auto tmp = sendKv(GREENTEA_TEST_ENV_SYNC, uuid);
+    m_syncTimeout.start();
+    return tmp;
   }
 
   void MbedHostTestRunner::parseMsg(const QByteArray &line)
@@ -147,6 +180,7 @@ namespace worlddirect {
         if(success){
             emit passedHostTestRun(m_testRun);
           }else{
+            emit errorMessage("Host test Failed");
             emit failedHostTestRun(m_testRun);
           }
       }
@@ -160,9 +194,18 @@ namespace worlddirect {
         bool ok = false;
         auto code = val[0].toInt(&ok);
         if(!ok){
+            emit errorMessage("Host test Failed");
             return;
           }
+
         emit exitReceived(code);
+
+        if(code != 0 ){
+            emit errorMessage("Host test Failed");
+          }else{
+            emit successMessage("Host Test Passed");
+          }
+
         return;
       }
 
@@ -177,6 +220,8 @@ namespace worlddirect {
           {
             return;
           }
+        m_syncTimeout.stop();
+        emit successMessage("New Host Test Run");
         emit syncReceived(uuid);
         newSyncReceived(uuid);
         return;
@@ -432,5 +477,31 @@ namespace worlddirect {
   {
     return sendString(GREENTEA_KV_POSTAMBLE);
   }
+
+  qint64 MbedHostTestRunner::writeEndl()
+  {
+    return sendString(GREENTEA_MSG_ENDL);
+  }
+
+  QString MbedHostTestRunner::errorCode2Msg() const
+  {
+    switch (error()) {
+      case QSerialPort::NoError:	return "No error occurred.";
+      case QSerialPort::DeviceNotFoundError: return "An error occurred while attempting to open an non-existing device.";
+      case QSerialPort::PermissionError: return "An error occurred while attempting to open an already opened device by another process or a user not having enough permission and credentials to open.";
+      case QSerialPort::OpenError: return "An error occurred while attempting to open an already opened device in this object.";
+      case QSerialPort::NotOpenError: return "This error occurs when an operation is executed that can only be successfully performed if the device is open. This value was introduced in QtSerialPort 5.2.";
+      case QSerialPort::ParityError: return "Parity error detected by the hardware while reading data. This value is obsolete. We strongly advise against using it in new code.";
+      case QSerialPort::FramingError: return "Framing error detected by the hardware while reading data. This value is obsolete. We strongly advise against using it in new code.";
+      case QSerialPort::BreakConditionError: return "Break condition detected by the hardware on the input line. This value is obsolete. We strongly advise against using it in new code.";
+      case QSerialPort::WriteError: return "An I/O error occurred while writing the data.";
+      case QSerialPort::ReadError: return "An I/O error occurred while reading the data.";
+      case QSerialPort::ResourceError: return "An I/O error occurred when a resource becomes unavailable, e.g. when the device is unexpectedly removed from the system.";
+      case QSerialPort::UnsupportedOperationError: return "The requested device operation is not supported or prohibited by the running operating system.";
+      case QSerialPort::TimeoutError: return "A timeout error occurred. This value was introduced in QtSerialPort 5.2.";
+      default: return "An unidentified error occurred.";
+      }
+  }
+
 
 }
