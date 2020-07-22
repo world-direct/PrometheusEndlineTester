@@ -23,11 +23,10 @@ namespace worlddirect {
       }
 
     QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
-    auto pathToCmd = settings.value(KEY_FLASHER_PATHTOCMD).toString();
     auto connectArgs = settings.value(KEY_FLASHER_CONNECTARGS).toString();
 
     m_mode = Mode::CONNECT;
-    this->start(pathToCmd, {connectArgs}, QIODevice::ReadOnly);
+    this->start(pathToCmd(), {connectArgs}, QIODevice::ReadOnly);
 
   }
 
@@ -43,11 +42,10 @@ namespace worlddirect {
       }
 
     QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
-    auto pathToCmd = settings.value(KEY_FLASHER_PATHTOCMD).toString();
     auto resetArgs = settings.value(KEY_FLASHER_RESETARGS).toString();
 
     m_mode = Mode::RESET;
-    this->start(pathToCmd, {resetArgs}, QIODevice::ReadOnly);
+    this->start(pathToCmd(), {resetArgs}, QIODevice::ReadOnly);
 
   }
 
@@ -63,7 +61,6 @@ namespace worlddirect {
       }
 
     QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
-    auto pathToCmd = settings.value(KEY_FLASHER_PATHTOCMD).toString();
     auto writeArgs = settings.value(KEY_FLASHER_WRITEARGS).toString();
 
     auto binaryKey =KEY_FLASHER_PATHTOTEST ;
@@ -82,7 +79,7 @@ namespace worlddirect {
     auto pathToFirmware = settings.value(binaryKey).toString();
 
     m_mode = Mode::PROGRAM;
-    this->start(pathToCmd, {writeArgs, pathToFirmware}, QIODevice::ReadOnly);
+    this->start(pathToCmd(), {writeArgs, pathToFirmware}, QIODevice::ReadOnly);
 
   }
 
@@ -98,43 +95,90 @@ namespace worlddirect {
 
   void StLinkDeviceFlasher::errorOccurredSlot(QProcess::ProcessError error)
   {
-    Q_UNUSED(error);
-    emit exitFailure();
+    auto prerror = tr(" Process Error: ");
+    switch (error) {
+      case Crashed:{
+          emit errorMessage(mode2String(m_mode) + prerror + tr("Crashed"));
+          break;}
+      case Timedout:{
+          emit errorMessage(mode2String(m_mode) + prerror + tr("Timed out"));
+          break;
+        }
+      case ReadError:{
+          emit errorMessage(mode2String(m_mode) + prerror + tr("Read Error"));
+          break;
+        }
+      case WriteError:{
+          emit errorMessage(mode2String(m_mode) + prerror  + tr("Write Error"));
+          break;
+        }
+      default:{
+          emit errorMessage(mode2String(m_mode) + prerror + tr("UNKOWN"));
+          break;
+        }
+      }
+
     m_mode = Mode::NONE;
   }
 
   void StLinkDeviceFlasher::finishedSlot(int exitCode, QProcess::ExitStatus exitStatus)
   {
-    if(exitCode != 0 || exitStatus != QProcess::NormalExit)
+    if(exitCode != 0)
       {
-        emit exitFailure();
+        auto errorMsg = QString(tr(" returned with error: %1")).arg( exitCode );
+        emit errorMessage(mode2String(m_mode) + errorMsg);
+        return;
+      }
+
+    if(exitStatus != QProcess::NormalExit)
+      {
+        emit errorMessage(mode2String(m_mode) +" "+ tr("Crashed") );
+        return;
       }
 
     switch (m_mode) {
       case Mode::NONE:{break;}
       case Mode::CONNECT:{
-          emit exitSuccess();
+          emit(successMessage(mode2String(m_mode)+ tr(" successfully finished")));
           emit targetConnected();
           break;
         }
       case Mode::PROGRAM:{
-          emit exitSuccess();
+          emit(successMessage(mode2String(m_mode)+ tr(" successfully finished")));
           emit targetProgrammed();
           break;
         }
       case Mode::RESET:{
-          emit exitSuccess();
+          emit(successMessage(mode2String(m_mode)+ tr(" successfully finished")));
           emit targetReset();
           break;
         }
       default:{
-          emit exitFailure();
+          emit errorMessage(mode2String(m_mode) + tr(" error: Unkown operation"));
           break;
         }
       }
     m_mode = Mode::NONE;
   }
 
+  QString StLinkDeviceFlasher::mode2String(StLinkDeviceFlasher::Mode md)
+  {
+    switch (md) {
+      case Mode::NONE:{return tr("ST-LINK NONE");}
+      case Mode::RESET:{return tr("ST-LINK Reset");}
+      case Mode::CONNECT:{return tr("ST-LINK Connect");}
+      case Mode::PROGRAM:{return tr("ST-LINK Program");}
+      }
+    return tr("ST-LINK");
+  }
 
+  QString StLinkDeviceFlasher::pathToCmd() const
+  {
+    QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
+    auto basePath = settings.value(KEY_FLASHER_BASEPATH).toString();
+    auto cmd = settings.value(KEY_FLASHER_PATHTOCMD).toString();
+
+    return basePath + cmd;
+  }
 
 } // namespace worlddirect

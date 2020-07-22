@@ -28,8 +28,8 @@ namespace worlddirect {
     void printData(const QByteArray &dt);
     void newLineReceived(const QByteArray &dt);
 
-    void exitSuccess();
-    void exitFailure();
+    void successMessage(const QString& msg);
+    void errorMessage(const QString& msg);
 
     void targetConnected();
     void targetProgrammed();
@@ -48,6 +48,10 @@ namespace worlddirect {
     void readProcessData();
     void errorOccurredSlot(QProcess::ProcessError error);
     void finishedSlot(int exitCode, QProcess::ExitStatus exitStatus);
+
+  private:
+    QString mode2String(Mode md);
+    QString pathToCmd()const;
 
   private :
     Mode m_mode;
