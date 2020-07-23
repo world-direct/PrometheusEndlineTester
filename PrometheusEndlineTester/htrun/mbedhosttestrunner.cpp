@@ -399,6 +399,13 @@ namespace worlddirect {
         return;
       }
 
+    // {{__appstart;prometheus}}
+    if(key.compare(CO1_APP_START) == 0)
+      {
+        emit firmwareStarted();
+      }
+
+
     emit kvReceived(key, val);
   }
 

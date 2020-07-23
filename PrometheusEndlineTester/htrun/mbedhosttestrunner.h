@@ -64,6 +64,8 @@ namespace worlddirect {
     void successMessage(const QString& msg);
     void errorMessage(const QString& msg);
 
+    void firmwareStarted();
+
   public slots:
     void openSerial();
     void serialSendSync();

@@ -62,5 +62,6 @@ constexpr const char* CO1_FUNCTIONAL_ENDLINE_TEST_TYPE= "__type";
 constexpr const char* CO1_FUNCTIONAL_ENDLINE_TEST_HWVER= "__hw_ver";
 constexpr const char* CO1_FUNCTIONAL_ENDLINE_TEST_EPNAME= "__ep_name";
 constexpr const char* CO1_FUNCTIONAL_ENDLINE_TEST_ICCID= "__icc_id";
+constexpr const char* CO1_APP_START = "__appstart";
 
 #endif // PROMETHEUSENDLINETESTER_GLOBAL_H

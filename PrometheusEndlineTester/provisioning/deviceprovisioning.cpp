@@ -26,6 +26,7 @@ namespace worlddirect {
 
   void DeviceProvisioning::getToken()
   {
+    emit printData("Requesting Identity Token...");
     auto thread = QThread::create(
           [this]{
         QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
@@ -54,6 +55,7 @@ namespace worlddirect {
 
   void DeviceProvisioning::downloadLatestFirmware()
   {
+    emit printData("Downloading latest Firmware...");
     auto thread = QThread::create(
           [this]{
         QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
@@ -89,7 +91,7 @@ namespace worlddirect {
 
   void DeviceProvisioning::createDevice(const QString &epName, const QString &type, const QString &hwVer, const QString &iccId)
   {
-
+    emit printData("Registering Device...");
     auto thread = QThread::create(
           [this, epName, type, hwVer, iccId]{
         QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
@@ -118,7 +120,7 @@ namespace worlddirect {
             return;
           }
 
-        emit successMessage("Device created successfully");
+        emit successMessage("Device successfully registered");
       }
     );
 
@@ -128,7 +130,7 @@ namespace worlddirect {
 
   void DeviceProvisioning::getPsk(const QString &epName)
   {
-
+    emit printData("Requesting PSK for Device...");
     auto thread = QThread::create(
           [this, epName]{
         // need epname, key and value
@@ -167,6 +169,7 @@ namespace worlddirect {
 
   void DeviceProvisioning::validatePsk(const QString &epName, const QString &iccId, const QString &psk)
   {
+    emit printData("Validating PSK...");
     auto thread = QThread::create(
           [this, epName, iccId, psk]{
         // need epname, key and value

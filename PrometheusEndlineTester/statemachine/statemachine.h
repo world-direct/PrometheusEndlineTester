@@ -38,7 +38,23 @@ namespace worlddirect {
     void success();
     void error();
 
+    void requestToken();
+    void downloadFirmware();
     void newTarget();
+    void conncectProgrammer();
+    void programTest();
+    void resetTarget();
+    void connectSerial();
+    void sendSync();
+    //void hostTestFinished();
+    void programFirmware();
+    void registerDevice();
+    void getPsk();
+    void validateEncryption();
+    void sendPsk();
+    void printNameplate();
+
+    void runTest();
 
   private:
     MainWindow* m_ui;
@@ -46,6 +62,7 @@ namespace worlddirect {
     MbedHostTestRunner *m_htrun;
     DeviceProvisioning * m_provisioning;
     DeviceInformation* m_deviceInformation;
+    bool m_autorun;
   };
 
 } // namespace worlddirect

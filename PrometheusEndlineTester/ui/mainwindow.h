@@ -49,9 +49,8 @@ namespace worlddirect {
     void getPsk();
     void validateEncryption();
     void downloadLatestFirmware();
-    void prepareTest();
     void runTest();
-    void provisionDevice();
+    void skip();
     void newTarget();
 
   public slots:
@@ -117,10 +116,8 @@ namespace worlddirect {
     QAction* m_getPskAct;
     QAction* m_validateEncryptionAct;
     QAction* m_getLatestFwAct;
-    QAction* m_prepareTestAct;
     QAction* m_runTestAct;
-    QAction* m_provisionDeviceAct;
-    QAction* m_newTargetAct;
+    QAction* m_skipStepAct;
 
     QMenu* m_fileMenu;
     QMenu* m_targetMenu;

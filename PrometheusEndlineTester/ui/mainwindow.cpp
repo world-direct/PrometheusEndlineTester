@@ -47,10 +47,8 @@ namespace worlddirect{
       m_getPskAct(Q_NULLPTR),
       m_validateEncryptionAct(Q_NULLPTR),
       m_getLatestFwAct(Q_NULLPTR),
-      m_prepareTestAct(Q_NULLPTR),
       m_runTestAct(Q_NULLPTR),
-      m_provisionDeviceAct(Q_NULLPTR),
-      m_newTargetAct(Q_NULLPTR),
+      m_skipStepAct(Q_NULLPTR),
       m_fileMenu(Q_NULLPTR),
       m_targetMenu(Q_NULLPTR),
       m_serialMenu(Q_NULLPTR),
@@ -263,22 +261,13 @@ namespace worlddirect{
     m_getLatestFwAct->setStatusTip(tr("Gets the latest stable version of the firmware with the provided name."));
     connect(m_getLatestFwAct, &QAction::triggered, this, &MainWindow::downloadLatestFirmware);
 
-    m_prepareTestAct = new QAction(tr("prepare Test"));
-    m_prepareTestAct->setStatusTip(tr(""));
-    connect(m_prepareTestAct, &QAction::triggered, this, &MainWindow::prepareTest);
-
     m_runTestAct = new QAction(tr("run Test"));
     m_runTestAct->setStatusTip(tr(""));
     connect(m_runTestAct, &QAction::triggered, this, &MainWindow::runTest);
 
-    m_provisionDeviceAct = new QAction(tr("provision Device"));
-    m_provisionDeviceAct->setStatusTip(tr(""));
-    connect(m_provisionDeviceAct, &QAction::triggered, this, &MainWindow::provisionDevice);
-
-    m_newTargetAct = new QAction(tr("new Target"));
-    m_newTargetAct->setStatusTip(tr(""));
-    connect(m_newTargetAct, &QAction::triggered, this, &MainWindow::newTarget);
-
+    m_skipStepAct = new QAction(tr("skip step"));
+    m_skipStepAct->setStatusTip(tr(""));
+    connect(m_skipStepAct, &QAction::triggered, this, &MainWindow::skip);
   }
 
   void MainWindow::createMenus()
@@ -314,10 +303,8 @@ namespace worlddirect{
     m_provisioningMenu->addAction(m_getLatestFwAct);
 
     m_testMenu = menuBar()->addMenu(tr("&Test"));
-    m_testMenu->addAction(m_prepareTestAct);
     m_testMenu->addAction(m_runTestAct);
-    m_testMenu->addAction(m_provisionDeviceAct);
-    m_testMenu->addAction(m_newTargetAct);
+    m_testMenu->addAction(m_skipStepAct);
 
     m_helpMenu = menuBar()->addMenu(tr("&Help"));
     m_helpMenu->addAction(m_aboutAct);
@@ -355,10 +342,8 @@ namespace worlddirect{
 
     m_testToolBar = addToolBar(tr("Test"));
     m_testToolBar->setObjectName("testToolBar");
-    m_testToolBar->addAction(m_prepareTestAct);
     m_testToolBar->addAction(m_runTestAct);
-    m_testToolBar->addAction(m_provisionDeviceAct);
-    m_testToolBar->addAction(m_newTargetAct);
+    m_testToolBar->addAction(m_skipStepAct);
 
   }
 

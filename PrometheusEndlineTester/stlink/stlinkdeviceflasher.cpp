@@ -18,6 +18,7 @@ namespace worlddirect {
 
   void StLinkDeviceFlasher::connectToTarget()
   {
+    emit printData("connect Programmer to Target...");
     if (state() != QProcess::NotRunning){
         return;
       }
@@ -32,11 +33,13 @@ namespace worlddirect {
 
   void StLinkDeviceFlasher::programTargetTest()
   {
+    emit printData("writing Test to Target...");
     programTarget(BinaryType::TEST);
   }
 
   void StLinkDeviceFlasher::resetTarget()
   {
+    emit printData("resetting Target...");
     if (state() != QProcess::NotRunning){
         return;
       }
@@ -51,6 +54,7 @@ namespace worlddirect {
 
   void StLinkDeviceFlasher::programTargetFirmware()
   {
+    emit printData("writing Firmware to Target...");
     programTarget(BinaryType::FIRMWARE);
   }
 
