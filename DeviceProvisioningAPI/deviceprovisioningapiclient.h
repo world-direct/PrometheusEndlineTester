@@ -28,11 +28,13 @@ namespace worlddirect {
 
     void SetAccessToken(const std::string& accessToken, const std::string& tokenType = S_DEFAULT_TOKEN_TYPE);
 
-    void DevicesPost(const std::string& id, const std::string& type, const std::string& version, const std::map<std::string, std::string>& metadata);
-    std::string DevicesByIdPskGet(const std::string& id);
-    std::string DevicesByIdValidateEncryptionGet(const std::string& id, const std::string& message);
+    void RegistrationBeginPost(const std::string& id, const std::string& type, const std::string& version, const std::map<std::string, std::string>& metadata);
+    std::string RegistrationByIdGetPskGet(const std::string& id);
+    std::string RegistrationByIdValidateEncryptionGet(const std::string& id, const std::string& message);
 
-    void FirmwareGet(const std::string& name, const std::string& filename);
+    void RegistartionDownloadFirmwareGet(const std::string& name, const std::string& filename);
+
+    void RegistrationByIdCompletePut(const std::string& id);
 
     bool hadError()const;
     std::string errorMessage()const;
@@ -42,7 +44,7 @@ namespace worlddirect {
     static size_t curlReadFuncCB(char *ptr, size_t size, size_t nmemb, std::stringstream * out);
 
     void setCurlError();
-    void setHttpError();
+    void setHttpError(const std::string& msg = std::string());
 
     void resetAllErrors();
 

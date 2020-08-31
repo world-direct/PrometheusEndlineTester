@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QUuid>
 #include <QString>
+#include <QVector>
 
 namespace worlddirect {
 
@@ -33,7 +34,7 @@ namespace worlddirect {
     void setHardwareVersion(const QString &hwVersion);
     void setEndpointName(const QString &epName);
     void setIccId(const QString &icc);
-    void setPSK(const QString &key);
+    void setPSK(const QVector<quint8> &key);
 
   public:
     void clear();
@@ -45,7 +46,7 @@ namespace worlddirect {
     QString hardwareVersion() const;
     QString endpointName() const;
     QString iccId() const;
-    QString psk() const;
+    QVector<quint8> psk() const;
 
   private:
     void setUuid(const QUuid& id);
@@ -56,7 +57,7 @@ namespace worlddirect {
     QString m_hardwareVersion;
     QString m_endpointName;
     QString m_iccId;
-    QString m_psk;
+    QVector<quint8> m_psk;
 
   };
 

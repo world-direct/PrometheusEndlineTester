@@ -49,6 +49,7 @@ namespace worlddirect{
       m_getLatestFwAct(Q_NULLPTR),
       m_runTestAct(Q_NULLPTR),
       m_skipStepAct(Q_NULLPTR),
+      m_retryStepAct(Q_NULLPTR),
       m_fileMenu(Q_NULLPTR),
       m_targetMenu(Q_NULLPTR),
       m_serialMenu(Q_NULLPTR),
@@ -268,6 +269,10 @@ namespace worlddirect{
     m_skipStepAct = new QAction(tr("skip step"));
     m_skipStepAct->setStatusTip(tr(""));
     connect(m_skipStepAct, &QAction::triggered, this, &MainWindow::skip);
+
+    m_retryStepAct = new QAction(tr("retry step"));
+    m_retryStepAct->setStatusTip(tr(""));
+    connect(m_retryStepAct, &QAction::triggered, this, &MainWindow::retry);
   }
 
   void MainWindow::createMenus()
@@ -305,6 +310,7 @@ namespace worlddirect{
     m_testMenu = menuBar()->addMenu(tr("&Test"));
     m_testMenu->addAction(m_runTestAct);
     m_testMenu->addAction(m_skipStepAct);
+    m_testMenu->addAction(m_retryStepAct);
 
     m_helpMenu = menuBar()->addMenu(tr("&Help"));
     m_helpMenu->addAction(m_aboutAct);
@@ -315,35 +321,34 @@ namespace worlddirect{
     m_fileToolBar = addToolBar(tr("File"));
     m_fileToolBar->setObjectName("fileToolBar");
     m_fileToolBar->addAction(m_newAct);
-//    m_fileToolBar->addAction(m_openAct);
-//    m_fileToolBar->addAction(m_saveAct);
-    m_fileToolBar->addAction(m_printNameplateAct);
+//    m_fileToolBar->addAction(m_printNameplateAct);
 
-    m_targetToolBar = addToolBar(tr("Target"));
-    m_targetToolBar->setObjectName("targetToolBar");
-    m_targetToolBar->addAction(m_connectAct);
-    m_targetToolBar->addAction(m_programTSTAct);
-    m_targetToolBar->addAction(m_resetAct);
-    m_targetToolBar->addAction(m_programFWAct);
+//    m_targetToolBar = addToolBar(tr("Target"));
+//    m_targetToolBar->setObjectName("targetToolBar");
+//    m_targetToolBar->addAction(m_connectAct);
+//    m_targetToolBar->addAction(m_programTSTAct);
+//    m_targetToolBar->addAction(m_resetAct);
+//    m_targetToolBar->addAction(m_programFWAct);
 
-    m_serialToolBar = addToolBar(tr("Serial"));
-    m_serialToolBar->setObjectName("serialToolBar");
-    m_serialToolBar->addAction(m_serialConnectAct);
-    m_serialToolBar->addAction(m_serialSendSyncAct);
-    m_serialToolBar->addAction(m_serialSendPskAct);
+//    m_serialToolBar = addToolBar(tr("Serial"));
+//    m_serialToolBar->setObjectName("serialToolBar");
+//    m_serialToolBar->addAction(m_serialConnectAct);
+//    m_serialToolBar->addAction(m_serialSendSyncAct);
+//    m_serialToolBar->addAction(m_serialSendPskAct);
 
-    m_provisioningToolBar = addToolBar(tr("Provisioning"));
-    m_provisioningToolBar->setObjectName("provisioningToolBar");
-    m_provisioningToolBar->addAction(m_requestTokenAct);
-    m_provisioningToolBar->addAction(m_registerDeviceAct);
-    m_provisioningToolBar->addAction(m_getPskAct);
-    m_provisioningToolBar->addAction(m_validateEncryptionAct);
-    m_provisioningToolBar->addAction(m_getLatestFwAct);
+//    m_provisioningToolBar = addToolBar(tr("Provisioning"));
+//    m_provisioningToolBar->setObjectName("provisioningToolBar");
+//    m_provisioningToolBar->addAction(m_requestTokenAct);
+//    m_provisioningToolBar->addAction(m_registerDeviceAct);
+//    m_provisioningToolBar->addAction(m_getPskAct);
+//    m_provisioningToolBar->addAction(m_validateEncryptionAct);
+//    m_provisioningToolBar->addAction(m_getLatestFwAct);
 
     m_testToolBar = addToolBar(tr("Test"));
     m_testToolBar->setObjectName("testToolBar");
-    m_testToolBar->addAction(m_runTestAct);
+//    m_testToolBar->addAction(m_runTestAct);
     m_testToolBar->addAction(m_skipStepAct);
+    m_testToolBar->addAction(m_retryStepAct);
 
   }
 

@@ -27,8 +27,8 @@ namespace worlddirect {
     void encryptWithSymmetricCiphers(const std::string& _plaintext, const std::string& _key, std::string& _cyphertext);
     void decryptWithSymmetricCiphers(const std::string& _cyphertext, const std::string& _key, std::string& _plaintext);
 
-    void encryptWithSymmetricCiphersBase64(const std::string& _plaintext, const std::string& _key, std::string& _cyphertext_b64);
-    void decryptWithSymmetricCiphersBase64(const std::string& _cyphertext_b64, const std::string& _key, std::string& _plaintext);
+    void encryptWithSymmetricCiphersBase64(const std::string& _plaintext, const std::vector<uint8_t>& _key, std::string& _cyphertext_b64);
+    void decryptWithSymmetricCiphersBase64(const std::string& _cyphertext_b64, const std::vector<uint8_t>& _key, std::string& _plaintext);
 
     bool hadError()const;
     std::string errorMessage()const;

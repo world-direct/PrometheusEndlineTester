@@ -71,7 +71,7 @@ namespace worlddirect {
     void serialSendSync();
     void serialSendSyncUuid(const QUuid &uuid);
 
-    void sendPSK(const QString& key);
+    void sendPSK(const QVector<quint8>& key);
 
   private slots:
     void readSerialData();

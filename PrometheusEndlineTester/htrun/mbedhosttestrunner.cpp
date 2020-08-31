@@ -1,10 +1,10 @@
 #include "mbedhosttestrunner.h"
 #include <QSettings>
 #include <QUuid>
+#include <QVector>
 
 #include "PrometheusEndlineTester_global.h"
 #include "basehex.h"
-
 
 namespace worlddirect {
   MbedHostTestRunner::MbedHostTestRunner(QObject* parent)
@@ -62,12 +62,12 @@ namespace worlddirect {
     sendSync(uuid);
   }
 
-  void MbedHostTestRunner::sendPSK(const QString &key)
+  void MbedHostTestRunner::sendPSK(const QVector<quint8> &key)
   {
-    auto psk = key.toStdString();
+    auto psk = key.toStdVector();
     auto data =  BaseHex::EncodeWithCrc(psk);
 
-    auto res = write(data.c_str());
+    auto res = write(data.data(), data.size());
     if(res < 0 ){
         return;
       }

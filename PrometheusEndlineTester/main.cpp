@@ -4,6 +4,7 @@
 #include <iostream>
 #include <QUuid>
 #include <QFile>
+#include <QVector>
 
 #include "PrometheusEndlineTester_global.h"
 #include <statemachine/statemachine.h>
@@ -11,6 +12,7 @@
 
 int main(int argc, char *argv[])
 {
+  qRegisterMetaType<QVector<quint8> >("QVector<quint8>");
   QApplication a(argc, argv);
   QCoreApplication::setOrganizationName("World-Direct eBusiness solutions GmbH");
   QCoreApplication::setApplicationVersion(PROJECT_VER);

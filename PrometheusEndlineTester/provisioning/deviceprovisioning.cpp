@@ -6,7 +6,9 @@
 
 #include <identityclient.h>
 #include <deviceprovisioningapiclient.h>
+#include <base64.h>
 #include <mbedcrypto.h>
+#include <algorithm>
 
 #include "PrometheusEndlineTester_global.h"
 
@@ -73,7 +75,7 @@ namespace worlddirect {
             return;
           }
 
-        cli.FirmwareGet(name, path);
+        cli.RegistartionDownloadFirmwareGet(name, path);
         if(cli.hadError()){
             auto errmsg = QString::fromStdString(cli.errorMessage());
             emit errorMessage(errmsg);
@@ -113,7 +115,7 @@ namespace worlddirect {
             return;
           }
 
-        cli.DevicesPost(id, ty, ver, {{KEY_ICCID, icc}});
+        cli.RegistrationBeginPost(id, ty, ver, {{KEY_ICCID, icc}});
         if(cli.hadError()){
             auto errmsg = QString::fromStdString(cli.errorMessage());
             emit errorMessage(errmsg);
@@ -150,14 +152,20 @@ namespace worlddirect {
           }
 
         // getPSK
-        auto key = cli.DevicesByIdPskGet(id);
+        auto key_64 = cli.RegistrationByIdGetPskGet(id);
         if(cli.hadError()){
             auto errmsg = QString::fromStdString(cli.errorMessage());
             emit errorMessage(errmsg);
             return;
           }
 
-        auto psk = QString::fromStdString(key);
+        //key_64.erase(std::remove(key_64.begin(), key_64.end(), '\"'), key_64.end());
+        std::vector<uint8_t> keyvec;
+        Base64::Decode(key_64, keyvec);
+        //std::string key(keyvec.begin(), keyvec.end());
+
+        //auto psk = QString::fromStdString(key);
+        auto psk = QVector<quint8>::fromStdVector(keyvec);
         emit pskReceived(psk);
         emit successMessage("PSK received");
       }
@@ -167,7 +175,7 @@ namespace worlddirect {
     thread->start();
   }
 
-  void DeviceProvisioning::validatePsk(const QString &epName, const QString &iccId, const QString &psk)
+  void DeviceProvisioning::validatePsk(const QString &epName, const QString &iccId, const QVector<quint8> &psk)
   {
     emit printData("Validating PSK...");
     auto thread = QThread::create(
@@ -178,7 +186,7 @@ namespace worlddirect {
         auto token = m_token.toStdString();
 
         auto id = epName.toStdString();
-        auto key = psk.toStdString();
+        auto key = psk.toStdVector();
         auto icc = iccId.toStdString();
 
         worlddirect::DeviceProvisioningAPIClient cli(server);
@@ -199,10 +207,9 @@ namespace worlddirect {
             emit errorMessage(errmsg);
             return;
           }
-        std::cout<<_cyphertext_sent<<std::endl;
 
         //validate with encrypted key
-        auto _cypehertext_rec = cli.DevicesByIdValidateEncryptionGet(id, _cyphertext_sent);
+        auto _cypehertext_rec = cli.RegistrationByIdValidateEncryptionGet(id, _cyphertext_sent);
         if(cli.hadError()){
             auto errmsg = QString::fromStdString(cli.errorMessage());
             emit errorMessage(errmsg);
@@ -230,6 +237,43 @@ namespace worlddirect {
     connect(thread, &QThread::finished, thread, &QObject::deleteLater);
     thread->start();
 
+  }
+
+  void DeviceProvisioning::completeDevice(const QString &epName)
+  {
+    emit printData("Completeing Device Registration...");
+    auto thread = QThread::create(
+          [this, epName]{
+
+        QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
+        auto server = settings.value(KEY_PROVISIONING_SERVER).toString().toStdString();
+        auto path = settings.value(KEY_FLASHER_PATHTOFW).toString().toStdString();
+        auto name = settings.value(KEY_PROVISIONING_NAME).toString().toStdString();
+        auto token = m_token.toStdString();
+
+        auto id = epName.toStdString();
+
+        worlddirect::DeviceProvisioningAPIClient cli(server);
+        cli.SetAccessToken(token);
+        if(cli.hadError()){
+            auto errmsg = QString::fromStdString(cli.errorMessage());
+            emit errorMessage(errmsg);
+            return;
+          }
+
+        cli.RegistrationByIdCompletePut(id);
+        if(cli.hadError()){
+            auto errmsg = QString::fromStdString(cli.errorMessage());
+            emit errorMessage(errmsg);
+            return;
+          }
+
+        emit successMessage("Device registration successfully completed");
+
+      }
+    );
+    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+    thread->start();
   }
 
   void DeviceProvisioning::setToken(const QString &s)

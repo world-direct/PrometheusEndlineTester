@@ -1,6 +1,6 @@
 #include "deviceprovisioningapiclient.h"
 
-#include<iostream>
+#include <iostream>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
@@ -8,12 +8,16 @@
 
 namespace worlddirect {
 
-  constexpr const char* S_DEVICES = "devices";
-  constexpr const char* S_PSK = "psk";
+  constexpr const char* S_API = "api";
+  constexpr const char* S_API_VERSION = "v2";
+  constexpr const char* S_REGISTRATION = "registration";
+  constexpr const char* S_GET_PSK = "getPsk";
   constexpr const char* S_VALIDATE_ENCRYPTION = "validateEncryption";
   constexpr const char* S_MESSAGE = "message";
-  constexpr const char* S_FIRMWARE = "firmware";
+  constexpr const char* S_DOWNLOAD_FIRMWARE = "downloadFirmware";
   constexpr const char* S_NAME = "name";
+  constexpr const char* S_BEGIN = "begin";
+  constexpr const char* S_COMPLETE = "complete";
 
   const std::string DeviceProvisioningAPIClient::S_DEFAULT_TOKEN_TYPE = "Bearer";
 
@@ -76,18 +80,18 @@ namespace worlddirect {
       }
   }
 
-  void DeviceProvisioningAPIClient::DevicesPost(const std::string &id, const std::string &type, const std::string &version, const std::map<std::string, std::string> &metadata)
+  void DeviceProvisioningAPIClient::RegistrationBeginPost(const std::string &id, const std::string &type, const std::string &version, const std::map<std::string, std::string> &metadata)
   {
     resetAllErrors();
 
     std::stringstream stringBuilder;
-    stringBuilder << m_apiUrl << "/" << S_DEVICES;
+    stringBuilder << m_apiUrl << "/" << S_API << "/" << S_API_VERSION << "/" << S_REGISTRATION << "/" << S_BEGIN;
     auto url = stringBuilder.str();
 
     boost::property_tree::ptree pf;
     pf.put("id", id);
-    pf.put("type", type);
-    pf.put("version", version);
+    pf.put("hardwareType", type);
+    pf.put("hardwareVersion", version);
 
     boost::property_tree::ptree md;
     for(auto i: metadata) {
@@ -96,7 +100,7 @@ namespace worlddirect {
         meta.put("value", i.second);
         md.push_back(std::make_pair("", meta));
       }
-    pf.add_child("metadata", md);
+    pf.add_child("parameters", md);
 
     std::stringstream stringBufferPf;
     boost::property_tree::write_json(stringBufferPf, pf);
@@ -136,7 +140,7 @@ namespace worlddirect {
 
     if (m_lastHttpCode != HTTP_CREATED)
       {
-        setHttpError();
+        setHttpError(stringBufferIn.str());
         curl_easy_cleanup(curl);
         return;
       }
@@ -147,15 +151,13 @@ namespace worlddirect {
     return;
   }
 
-  std::string DeviceProvisioningAPIClient::DevicesByIdPskGet(const std::string &id)
+  std::string DeviceProvisioningAPIClient::RegistrationByIdGetPskGet(const std::string &id)
   {
     resetAllErrors();
 
     std::stringstream stringBuilder;
-    stringBuilder << m_apiUrl << "/" << S_DEVICES << "/" << id << "/" << S_PSK;
+    stringBuilder << m_apiUrl << "/" << S_API << "/" << S_API_VERSION << "/" << S_REGISTRATION << "/" << id << "/" << S_GET_PSK;
     auto url = stringBuilder.str();
-
-    CURLcode m_lastCurlCode;
 
     auto curl = curl_easy_duphandle(m_curl);
 
@@ -177,7 +179,7 @@ namespace worlddirect {
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &m_lastHttpCode);
 
     if (m_lastHttpCode != HTTP_OK){
-        setHttpError();
+        setHttpError(stringBufferIn.str());
         curl_easy_cleanup(curl);
         return std::string();
       }
@@ -186,17 +188,18 @@ namespace worlddirect {
     return stringBufferIn.str();
   }
 
-  std::string DeviceProvisioningAPIClient::DevicesByIdValidateEncryptionGet(const std::string &id, const std::string &message)
+  std::string DeviceProvisioningAPIClient::RegistrationByIdValidateEncryptionGet(const std::string &id, const std::string &message)
   {
     resetAllErrors();
-
-    std::stringstream stringBuilder;
-    stringBuilder << m_apiUrl << "/" << S_DEVICES << "/" << id << "/" << S_VALIDATE_ENCRYPTION << "?" << S_MESSAGE <<"="<< message;
-    auto url = stringBuilder.str();
-
     auto curl = curl_easy_duphandle(m_curl);
 
+    auto msg_enc = curl_easy_escape(curl, message.c_str(), message.size() );
+    std::stringstream stringBuilder;
+    stringBuilder << m_apiUrl << "/" << S_API << "/" << S_API_VERSION << "/" << S_REGISTRATION << "/" << id << "/" << S_VALIDATE_ENCRYPTION << "?" << S_MESSAGE <<"="<< msg_enc;
+    auto url = stringBuilder.str();
+
     std::stringstream stringBufferIn;
+
 
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &stringBufferIn);
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
@@ -216,7 +219,7 @@ namespace worlddirect {
 
     if (m_lastHttpCode != HTTP_OK)
       {
-        setHttpError();
+        setHttpError(stringBufferIn.str());
         curl_easy_cleanup(curl);
         return std::string();
       }
@@ -225,15 +228,22 @@ namespace worlddirect {
     return stringBufferIn.str();
   }
 
-  void DeviceProvisioningAPIClient::FirmwareGet(const std::string &name, const std::string &filename)
+  void DeviceProvisioningAPIClient::RegistartionDownloadFirmwareGet(const std::string &name, const std::string &filename)
   {
     resetAllErrors();
 
     std::stringstream stringBuilder;
-    stringBuilder << m_apiUrl << "/" << S_FIRMWARE<< "?" << S_NAME <<"="<< name;;
+    stringBuilder << m_apiUrl << "/" << S_API << "/" << S_API_VERSION << "/" << S_REGISTRATION << "/" << S_DOWNLOAD_FIRMWARE << "?" << S_NAME <<"="<< name;;
     auto url = stringBuilder.str();
 
     auto curl = curl_easy_duphandle(m_curl);
+
+    std::stringstream stringBufferIn;
+
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &stringBufferIn);
+
+    stringBufferIn.str("");
+    stringBufferIn.clear(); // Clear state flags.
 
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
@@ -242,7 +252,7 @@ namespace worlddirect {
 
     outfile.open(filename, std::ios::out | std::ios::trunc);
     if(outfile.is_open() == false){
-        std::stringstream stringBuilder;
+        stringBuilder.clear();
         stringBuilder << "error could not open file: " << filename;
 
         m_lastErrorMessage = stringBuilder.str();
@@ -262,7 +272,7 @@ namespace worlddirect {
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &m_lastHttpCode);
 
     if (m_lastHttpCode != HTTP_OK){
-        setHttpError();
+        setHttpError(stringBufferIn.str());
         outfile.close();
         curl_easy_cleanup(curl);
         return;
@@ -272,6 +282,42 @@ namespace worlddirect {
     curl_easy_cleanup(curl);
     return;
 
+  }
+
+  void DeviceProvisioningAPIClient::RegistrationByIdCompletePut(const std::string &id)
+  {
+
+    std::stringstream stringBuilder;
+    stringBuilder << m_apiUrl << "/" << S_API << "/" << S_API_VERSION << "/" << S_REGISTRATION << "/" << id << "/" << S_COMPLETE;
+    auto url = stringBuilder.str();
+
+    auto curl = curl_easy_duphandle(m_curl);
+    std::stringstream stringBufferIn;
+
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &stringBufferIn);
+
+    stringBufferIn.str("");
+    stringBufferIn.clear(); // Clear state flags.
+
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_PUT, 1L);
+
+    m_lastCurlCode = curl_easy_perform(curl);
+    if (m_lastCurlCode != CURLE_OK){
+        setCurlError();
+        curl_easy_cleanup(curl);
+        return;
+      }
+
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &m_lastHttpCode);
+    if (m_lastHttpCode != HTTP_OK){
+        setHttpError(stringBufferIn.str());
+        curl_easy_cleanup(curl);
+        return;
+      }
+
+    curl_easy_cleanup(curl);
+    return;
   }
 
   bool DeviceProvisioningAPIClient::hadError() const
@@ -310,10 +356,15 @@ namespace worlddirect {
     m_lastErrorMessage = stringBuilder.str();
   }
 
-  void DeviceProvisioningAPIClient::setHttpError()
+  void DeviceProvisioningAPIClient::setHttpError(const std::string& msg)
   {
     std::stringstream stringBuilder;
     stringBuilder << "HTTP error " << code2status(m_lastHttpCode);
+    if(msg.empty() == false){
+        stringBuilder << std::endl;
+        stringBuilder << msg;
+        stringBuilder << std::endl;
+      }
 
     m_lastErrorMessage = stringBuilder.str();
   }

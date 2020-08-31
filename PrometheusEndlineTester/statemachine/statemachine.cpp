@@ -25,6 +25,7 @@ namespace worlddirect {
     connect(this, &StateMachine::downloadFirmware,              m_provisioning, &DeviceProvisioning::downloadLatestFirmware);
     connect(this, &StateMachine::newTarget,                     m_deviceInformation, &DeviceInformation::clear);
     connect(this, &StateMachine::newTarget,                     m_htrun, &MbedHostTestRunner::close);
+    connect(this, &StateMachine::closeSerial,                    m_htrun, &MbedHostTestRunner::close);
     connect(this, &StateMachine::conncectProgrammer,            m_stflash, &StLinkDeviceFlasher::connectToTarget);
     connect(this, &StateMachine::programTest,                   m_stflash, &StLinkDeviceFlasher::programTargetTest);
     connect(this, &StateMachine::resetTarget,                   m_stflash, &StLinkDeviceFlasher::resetTarget);
@@ -89,6 +90,27 @@ namespace worlddirect {
         //emit newTarget();//this is dirty: the statmachine reenters the state on error...
       }
     );
+    connect(
+          this, &StateMachine::newTarget,
+          [this](){
+        m_autorun = false;
+      }
+    );
+    connect(
+          this, &StateMachine::completeDevice,
+          [this](){
+        auto epName = m_deviceInformation->endpointName();
+        m_provisioning->completeDevice(epName);
+        //QTimer::singleShot(1000, this, &StateMachine::newTarget);
+      }
+    );
+    connect(
+          this, &StateMachine::retry,
+          [this](){
+                m_autorun = true;
+                QTimer::singleShot(1000, this, &StateMachine::again);
+      }
+    );
 
     connect(m_ui, &MainWindow::downloadLatestFirmware,          this, &StateMachine::downloadFirmware);
     connect(m_ui, &MainWindow::requestToken,                    this, &StateMachine::requestToken);
@@ -106,6 +128,7 @@ namespace worlddirect {
     connect(m_ui, &MainWindow::printNameplate,                  this, &StateMachine::printNameplate);
     connect(m_ui, &MainWindow::runTest,                         this, &StateMachine::runTest);
     connect(m_ui, &MainWindow::skip,                            this, &StateMachine::success);
+    connect(m_ui, &MainWindow::retry,                            this, &StateMachine::retry);
 
     connect(m_stflash, &StLinkDeviceFlasher::newLineReceived,   this, &StateMachine::printData);
     connect(m_stflash, &StLinkDeviceFlasher::printData,         this, &StateMachine::printData);
@@ -351,8 +374,7 @@ namespace worlddirect {
           [this]() {
         emit printData("===Target Provisioned===");
         if(m_autorun){
-        m_htrun->close();
-            //emit printNameplate();
+            m_htrun->close();
             QTimer::singleShot(1000, m_htrun, &MbedHostTestRunner::close);
             QTimer::singleShot(1000, this, &StateMachine::printNameplate);
           }
@@ -365,70 +387,91 @@ namespace worlddirect {
           targetDone, &QState::entered,
           [this]() {
         emit printData("===Target Done===");
+        if(m_autorun){
+            QTimer::singleShot(1000, this, &StateMachine::completeDevice);
+          }
         m_autorun = false;
       }
     );
 
     initial->addTransition(this, &StateMachine::success, tokenRequested);
     initial->addTransition(this, &StateMachine::error, initial);
+    initial->addTransition(this, &StateMachine::again, initial);
 
     tokenRequested->addTransition(this, &StateMachine::success, firmwareDownloaded);
     tokenRequested->addTransition(this, &StateMachine::error, tokenRequested);
+    tokenRequested->addTransition(this, &StateMachine::again, tokenRequested);
 
     firmwareDownloaded->addTransition(this, &StateMachine::newTarget, ready);
 
     ready->addTransition(this, &StateMachine::success, targetConnected);
     ready->addTransition(this, &StateMachine::error, ready);
+    ready->addTransition(this, &StateMachine::again, ready);
     ready->addTransition(this, &StateMachine::newTarget, ready);
 
     targetConnected->addTransition(this, &StateMachine::success, targetTestProgrammed);
     targetConnected->addTransition(this, &StateMachine::error, targetConnected);
+    targetConnected->addTransition(this, &StateMachine::again, targetConnected);
     targetConnected->addTransition(this, &StateMachine::newTarget, ready);
 
     targetTestProgrammed->addTransition(this, &StateMachine::success, targetTestReady);
     targetTestProgrammed->addTransition(this, &StateMachine::error, targetTestProgrammed);
+    targetTestProgrammed->addTransition(this, &StateMachine::again, targetTestProgrammed);
     targetTestProgrammed->addTransition(this, &StateMachine::newTarget, ready);
 
     targetTestReady->addTransition(this, &StateMachine::success, serialConnected);
     targetTestReady->addTransition(this, &StateMachine::error, targetTestReady);
+    targetTestReady->addTransition(this, &StateMachine::again, targetTestReady);
     targetTestReady->addTransition(this, &StateMachine::newTarget, ready);
 
     serialConnected->addTransition(this, &StateMachine::success, targetTestRunning);
     serialConnected->addTransition(this, &StateMachine::error, serialConnected);
+    serialConnected->addTransition(this, &StateMachine::again, serialConnected);
     serialConnected->addTransition(this, &StateMachine::newTarget, ready);
 
     targetTestRunning->addTransition(this, &StateMachine::success, targetTested);
     targetTestRunning->addTransition(this, &StateMachine::error, targetTestRunning);
+    targetTestRunning->addTransition(this, &StateMachine::again, targetTestRunning);
     targetTestRunning->addTransition(this, &StateMachine::newTarget, ready);
 
     targetTested->addTransition(this, &StateMachine::success, targetNotRegistered);
     targetTested->addTransition(this, &StateMachine::error, targetTested);
+    targetTested->addTransition(this, &StateMachine::again, targetTested);
     targetTested->addTransition(this, &StateMachine::newTarget, ready);
 
     targetNotRegistered->addTransition(this, &StateMachine::success, targetNotPorvisioned);
     targetNotRegistered->addTransition(this, &StateMachine::error, targetNotRegistered);
+    targetNotRegistered->addTransition(this, &StateMachine::again, targetNotRegistered);
     targetNotRegistered->addTransition(this, &StateMachine::newTarget, ready);
 
     targetNotPorvisioned->addTransition(this, &StateMachine::success, pskReceived);
     targetNotPorvisioned->addTransition(this, &StateMachine::error, targetNotPorvisioned);
+    targetNotPorvisioned->addTransition(this, &StateMachine::again, targetNotPorvisioned);
     targetNotPorvisioned->addTransition(this, &StateMachine::newTarget, ready);
 
     pskReceived->addTransition(this, &StateMachine::success, pskVerified);
     pskReceived->addTransition(this, &StateMachine::error, pskReceived);
+    pskReceived->addTransition(this, &StateMachine::again, pskReceived);
     pskReceived->addTransition(this, &StateMachine::newTarget, ready);
 
     pskVerified->addTransition(this, &StateMachine::success, targetFirmwareReady);
     pskVerified->addTransition(this, &StateMachine::error, pskVerified);
+    pskVerified->addTransition(this, &StateMachine::again, pskVerified);
     pskVerified->addTransition(this, &StateMachine::newTarget, ready);
 
     targetFirmwareReady->addTransition(this, &StateMachine::success, targetProvisioned);
     targetFirmwareReady->addTransition(this, &StateMachine::error, targetFirmwareReady);
+    targetFirmwareReady->addTransition(this, &StateMachine::again, targetFirmwareReady);
     targetFirmwareReady->addTransition(this, &StateMachine::newTarget, ready);
 
     targetProvisioned->addTransition(this, &StateMachine::success, targetDone);
     targetProvisioned->addTransition(this, &StateMachine::error, targetProvisioned);
+    targetProvisioned->addTransition(this, &StateMachine::again, targetProvisioned);
     targetProvisioned->addTransition(this, &StateMachine::newTarget, ready);
 
+    targetDone->addTransition(this, &StateMachine::success, ready);
+    targetDone->addTransition(this, &StateMachine::error, targetProvisioned);
+    targetDone->addTransition(this, &StateMachine::again, targetProvisioned);
     targetDone->addTransition(this, &StateMachine::newTarget, ready);
 
     this->addState(initial);

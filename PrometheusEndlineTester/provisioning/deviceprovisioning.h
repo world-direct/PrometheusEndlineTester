@@ -25,7 +25,7 @@ namespace worlddirect {
     void successMessage(const QString& msg);
     void errorMessage(const QString& msg);
 
-    void pskReceived(const QString& key);
+    void pskReceived(const QVector<quint8>& key);
 
   public slots:
     void getToken();
@@ -38,7 +38,9 @@ namespace worlddirect {
 
     // void testPsk(const QString& epName);
     void getPsk(const QString& epName);
-    void validatePsk(const QString& epName, const QString &iccId, const QString &psk);
+    void validatePsk(const QString& epName, const QString &iccId, const QVector<quint8> &psk);
+
+    void completeDevice(const QString& epName);
 
 
   private slots:

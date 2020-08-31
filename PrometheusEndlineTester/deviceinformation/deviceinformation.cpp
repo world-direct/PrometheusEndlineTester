@@ -26,7 +26,7 @@ namespace worlddirect {
     setIccId(QString());
     setEndpointName(QString());
     setHardwareVersion(QString());
-    setPSK(QString());
+    setPSK(QVector<quint8>());
   }
 
   bool DeviceInformation::valid() const
@@ -113,7 +113,7 @@ namespace worlddirect {
       }
   }
   
-  QString DeviceInformation::psk() const
+  QVector<quint8> DeviceInformation::psk() const
   {
     return m_psk;
   }
@@ -126,7 +126,7 @@ namespace worlddirect {
       }
   }
 
-  void DeviceInformation::setPSK(const QString &key)
+  void DeviceInformation::setPSK(const QVector<quint8> &key)
   {
     m_psk = key;
   }

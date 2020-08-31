@@ -51,6 +51,7 @@ namespace worlddirect {
     void downloadLatestFirmware();
     void runTest();
     void skip();
+    void retry();
     void newTarget();
 
   public slots:
@@ -118,6 +119,7 @@ namespace worlddirect {
     QAction* m_getLatestFwAct;
     QAction* m_runTestAct;
     QAction* m_skipStepAct;
+    QAction* m_retryStepAct;
 
     QMenu* m_fileMenu;
     QMenu* m_targetMenu;

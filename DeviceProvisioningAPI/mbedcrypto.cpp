@@ -20,6 +20,8 @@ namespace worlddirect {
   constexpr auto alg = PSA_ALG_AEAD_WITH_TAG_LENGTH(PSA_ALG_CCM, tag_length);
 
   MbedCrypto::MbedCrypto()
+    :m_status(PSA_SUCCESS),
+      m_lastErrorMessage()
   {
 
   }
@@ -221,7 +223,7 @@ namespace worlddirect {
     _plaintext.assign(message_plaintext.begin(), message_plaintext.end());
   }
 
-  void MbedCrypto::encryptWithSymmetricCiphersBase64(const std::string &_plaintext, const std::string &_key, std::string &_cyphertext_b64)
+  void MbedCrypto::encryptWithSymmetricCiphersBase64(const std::string &_plaintext, const std::vector<uint8_t> &_key, std::string &_cyphertext_b64)
   {
     std::vector<uint8_t> message_plaintext(_plaintext.begin(), _plaintext.end());
     std::vector<uint8_t> message_key(_key.begin(), _key.end());
@@ -232,7 +234,7 @@ namespace worlddirect {
     _cyphertext_b64 =  Base64::Encode(message_cyphertext);
   }
 
-  void MbedCrypto::decryptWithSymmetricCiphersBase64(const std::string &_cyphertext_b64, const std::string &_key, std::string &_plaintext)
+  void MbedCrypto::decryptWithSymmetricCiphersBase64(const std::string &_cyphertext_b64, const std::vector<uint8_t> &_key, std::string &_plaintext)
   {
     std::vector<uint8_t> message_cyphertext;
     Base64::Decode(_cyphertext_b64, message_cyphertext);

@@ -37,6 +37,8 @@ namespace worlddirect {
 
     void success();
     void error();
+    void again();
+    void retry();
 
     void requestToken();
     void downloadFirmware();
@@ -53,6 +55,8 @@ namespace worlddirect {
     void validateEncryption();
     void sendPsk();
     void printNameplate();
+    void completeDevice();
+    void closeSerial();
 
     void runTest();
 
