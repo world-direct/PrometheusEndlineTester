@@ -43,6 +43,7 @@ namespace worlddirect {
     void resetTarget();
     void programTargetFirmware();
     void programTarget(BinaryType type);
+    void clearWriteProtection();
 
   private slots:
     void readProcessData();

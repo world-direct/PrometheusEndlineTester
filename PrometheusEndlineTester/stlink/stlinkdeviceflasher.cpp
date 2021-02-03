@@ -64,6 +64,8 @@ namespace worlddirect {
         return;
       }
 
+    clearWriteProtection();
+
     QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
     auto writeArgs = settings.value(KEY_FLASHER_WRITEARGS).toString();
 
@@ -84,6 +86,16 @@ namespace worlddirect {
 
     m_mode = Mode::PROGRAM;
     this->start(pathToCmd(), {writeArgs, pathToFirmware}, QIODevice::ReadOnly);
+
+  }
+
+  void StLinkDeviceFlasher::clearWriteProtection()
+  {
+    if (state() != QProcess::NotRunning){
+        return;
+      }
+
+    this->start(pathToCmd(), {"-OB", "WRP=0x00FFFFFF"}, QIODevice::ReadOnly);
 
   }
 
