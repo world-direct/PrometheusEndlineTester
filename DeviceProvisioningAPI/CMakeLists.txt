@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
 
-include("C:/dev/src/vcpkg/scripts/buildsystems/vcpkg.cmake")
+include("C:/dev/bin/vcpkg/scripts/buildsystems/vcpkg.cmake")
 
-set(CURL_DIR "C:/dev/src/vcpkg/packages/curl_x64-windows/share/curl")
+set(CURL_DIR "C:/dev/bin/vcpkg/packages/curl_x64-windows/share/curl")
 
 find_package(CURL CONFIG REQUIRED)
 find_package(Boost 1.60.0 REQUIRED COMPONENTS filesystem system regex)
