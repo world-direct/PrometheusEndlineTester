@@ -310,7 +310,7 @@ namespace worlddirect {
       }
 
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &m_lastHttpCode);
-    if (m_lastHttpCode != HTTP_OK){
+    if (m_lastHttpCode != HTTP_CREATED){
         setHttpError(stringBufferIn.str());
         curl_easy_cleanup(curl);
         return;
