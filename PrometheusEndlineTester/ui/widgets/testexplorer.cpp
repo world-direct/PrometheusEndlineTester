@@ -152,7 +152,8 @@ namespace worlddirect {
 
   void TestExplorer::printNameplate()
   {
-    QList<QWidget*> printwid = {m_namePlate, m_dcPlate};
+    QList<QWidget*> printwid = {m_namePlate};
+    //QList<QWidget*> printwid = {m_namePlate, m_dcPlate};
     QPrinter printer(QPrinter::HighResolution);
 
     QPrintDialog printDialog(&printer, this);

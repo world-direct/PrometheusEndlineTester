@@ -38,13 +38,28 @@ namespace worlddirect {
     font.setBold(true);
     m_organizationLabel->setFont(font);
 
+    font = m_typeLabel->font();
+    font.setPointSize(font.pointSize()+1);
+    font.setBold(true);
+    m_typeLabel->setFont(font);
+
     m_typeIndicator->setAlignment(Qt::AlignRight);
+    m_typeIndicator->setFont(font);
+
+    m_hwVerLabel->setFont(font);
 
     m_hwVerIndicator->setAlignment(Qt::AlignRight);
+    m_hwVerIndicator->setFont(font);
+
+    m_endpointLabel->setFont(font);
 
     m_endpointIndicator->setAlignment(Qt::AlignRight);
+    m_endpointIndicator->setFont(font);
+
+    m_iccLabel->setFont(font);
 
     m_iccIndicator->setAlignment(Qt::AlignRight);
+    m_iccIndicator->setFont(font);
 
     int logo_size = minimumHeight()/15.0*7.0;
 
@@ -54,7 +69,7 @@ namespace worlddirect {
     QPixmap weeeMarkPix(":/PrometheusEndlineTester/images/WEEE_mark.svg");
     m_weeeMark->setPixmap(weeeMarkPix.scaled(logo_size-10,logo_size-10,Qt::KeepAspectRatio));
 
-    int qr_size = 168;
+    int qr_size = 156;
 
     m_qrCode->setMinimumWidth(qr_size);
     m_qrCode->setMinimumHeight(qr_size);
@@ -160,6 +175,7 @@ namespace worlddirect {
         painter.translate(printer.paperRect().center());
         painter.scale(scale, scale);
         painter.translate(-1 * w / 2, -1 * h/ 2);
+        printer.setPageMargins(2, 2, 2, 2, QPrinter::Millimeter);
         this->render(&painter);
       }
 

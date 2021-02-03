@@ -37,7 +37,7 @@ namespace worlddirect {
     QPrinter printer(QPrinter::HighResolution);
     printer.setOutputFormat(QPrinter::PdfFormat);
     printer.setOutputFileName("DcPlate.pdf");
-    printer.setPageMargins(0, 0, 0, 0, QPrinter::Millimeter);
+    printer.setPageMargins(2, 2, 2, 2, QPrinter::Millimeter);
     printer.setFullPage(false);
     //printer.setPageSize(QPrinter::A8);
     printer.setPageSizeMM(QSizeF(100.0 , 30.0));
