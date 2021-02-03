@@ -15,7 +15,7 @@ cd vcpkg
 
 build with
 ~~~
--DCMAKE_TOOLCHAIN_FILE=C:/dev/src/vcpkg/scripts/buildsystems/vcpkg.cmake
+-DCMAKE_TOOLCHAIN_FILE=C:/dev/bin/vcpkg/scripts/buildsystems/vcpkg.cmake
 ~~~
 
 
