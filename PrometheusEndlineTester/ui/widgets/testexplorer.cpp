@@ -5,11 +5,14 @@
 #include <QPainter>
 #include <QPrintDialog>
 #include <QPrinter>
+#include <QSettings>
 #include <QThread>
 #include <QTreeView>
 
 #include "dcplatewidget.h"
-#include "nameplatewidget.h"
+#include "prometheusnameplatewidget.h"
+#include "gatewaynameplatewidget.h"
+#include "PrometheusEndlineTester_global.h"
 
 #include <ui/model/testcasesumarymodel.h>
 
@@ -17,16 +20,16 @@ namespace worlddirect {
 
   TestExplorer::TestExplorer(QWidget *parent) : QWidget(parent),
     m_testSetup(new QWidget()),
-    m_namePlate(new NamePlateWidget()),
-    m_dcPlate(new DcPlateWidget()),
+    m_namePlate(nullptr),
+    m_dcPlate(nullptr),
     m_testCaseSumary(new QLabel()),
     m_testCases(new QTreeView())
   {
+
     auto m_layout = new QGridLayout(this);
-    m_layout->setMargin(0);
+    m_layout->setMargin(5);
     m_layout->setHorizontalSpacing(0);
     m_layout->setVerticalSpacing(0);
-    this->setMaximumSize(560,this->maximumHeight());
 
     //    m_testSetup->setAutoFillBackground(true);
     //    auto testSetupLayout = new QGridLayout();
@@ -46,8 +49,27 @@ namespace worlddirect {
     line->setFrameShadow(QFrame::Sunken);
     m_layout->addWidget(line);
 
-    m_layout->addWidget(m_namePlate);
-    m_layout->addWidget(m_dcPlate);
+    //
+    QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
+    auto type = settings.value(KEY_PROVISIONING_NAME).toString();
+    if(type.compare("prometheus") == 0){
+       this->setMaximumSize(560,this->maximumHeight());
+       m_namePlate = new PrometheusNamePlateWidget();
+       m_dcPlate = new DcPlateWidget();
+    }
+    if(type.compare("gateway") == 0){
+       this->setMaximumSize(326,this->maximumHeight());
+       m_namePlate = new GatewayNamePlateWidget();
+       m_dcPlate = nullptr;
+    }
+
+    if(m_namePlate != nullptr){
+       m_layout->addWidget(m_namePlate);
+    }
+    if(m_dcPlate != nullptr){
+        m_layout->addWidget(m_dcPlate);
+    }
+    //
 
     auto line2 = new QFrame();
     line2->setFrameShape(QFrame::HLine);

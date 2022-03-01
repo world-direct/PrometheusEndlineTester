@@ -1,6 +1,7 @@
 #include "stlinkdeviceflasher.h"
 #include <QIODevice>
 #include <QSettings>
+#include <QThread>
 
 #include "PrometheusEndlineTester_global.h"
 
@@ -28,6 +29,9 @@ namespace worlddirect {
 
     m_mode = Mode::CONNECT;
     this->start(pathToCmd(), {connectArgs}, QIODevice::ReadOnly);
+
+   QThread::currentThread()->msleep(5000);
+   clearWriteProtection();
 
   }
 
@@ -64,7 +68,7 @@ namespace worlddirect {
         return;
       }
 
-    clearWriteProtection();
+    // clearWriteProtection();
 
     QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
     auto writeArgs = settings.value(KEY_FLASHER_WRITEARGS).toString();
@@ -95,6 +99,7 @@ namespace worlddirect {
         return;
       }
 
+    m_mode = Mode::CLEAR_PROTECTION;
     this->start(pathToCmd(), {"-OB", "WRP=0x00FFFFFF"}, QIODevice::ReadOnly);
 
   }
@@ -155,7 +160,7 @@ namespace worlddirect {
     switch (m_mode) {
       case Mode::NONE:{break;}
       case Mode::CONNECT:{
-          emit(successMessage(mode2String(m_mode)+ tr(" successfully finished")));
+          emit(connectSuccessMessage(mode2String(m_mode)+ tr(" successfully finished")));
           emit targetConnected();
           break;
         }
@@ -165,8 +170,13 @@ namespace worlddirect {
           break;
         }
       case Mode::RESET:{
-          emit(successMessage(mode2String(m_mode)+ tr(" successfully finished")));
+          emit(resetSuccessMessage(mode2String(m_mode)+ tr(" successfully finished")));
           emit targetReset();
+          break;
+        }
+      case Mode::CLEAR_PROTECTION:{
+          emit(successMessage(mode2String(m_mode)+ tr(" successfully cleared write protection")));
+          emit targetWritProtectionCleared();
           break;
         }
       default:{

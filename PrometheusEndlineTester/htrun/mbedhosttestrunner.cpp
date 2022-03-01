@@ -11,11 +11,14 @@ namespace worlddirect {
     :QSerialPort(parent),
       m_testRun("UNKONWN TEST RUN"),
       m_hostTest("UNKNOWN HOST TEST"),
-      m_syncTimeout(this)
+      m_syncTimeout(this),
+      m_opTimeout(this),
+      m_operation(operation::NONE)
   {
     connect(this, &QSerialPort::readyRead, this, &MbedHostTestRunner::readSerialData);
     connect(this, &MbedHostTestRunner::newLineReceived, this, &MbedHostTestRunner::parseNewLine);
     connect(&m_syncTimeout, &QTimer::timeout, this, &MbedHostTestRunner::syncTimedOut);
+    connect(&m_syncTimeout, &QTimer::timeout, this, &MbedHostTestRunner::opTimedOut);
   }
 
   MbedHostTestRunner::~MbedHostTestRunner()
@@ -61,6 +64,25 @@ namespace worlddirect {
   {
     sendSync(uuid);
   }
+
+  void MbedHostTestRunner::serialSelectEndlineTest(){
+      sendKv(WD_TEST_ENV_SELECT, WD_TEST_ENV_ENDLINE_TEST);
+  }
+
+  void MbedHostTestRunner::serialSelectProvisioning(){
+      sendKv(WD_TEST_ENV_SELECT, WD_TEST_ENV_PROVISIONING);
+  }
+
+  void MbedHostTestRunner::serialReadIccid(){
+      m_operation = operation::ICCID_GET;
+      QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
+      auto op_timeout_duration = settings.value(KEY_SERIAL_OP_TIMEOUT).toInt();
+      m_opTimeout.setInterval(op_timeout_duration);
+      m_opTimeout.setSingleShot(true);
+      sendKv(WD_TEST_ENV_OP, WD_TEST_ENV_OP_ICCID_GET);
+      m_opTimeout.start();
+  }
+
 
   void MbedHostTestRunner::sendPSK(const QVector<quint8> &key)
   {
@@ -109,6 +131,13 @@ namespace worlddirect {
   {
     auto msg = QString("Host Test timed out: did not receive sync within timeout(%1)").arg(m_syncTimeout.interval());
     emit errorMessage(msg);
+  }
+
+  void MbedHostTestRunner::opTimedOut()
+  {
+    auto msg = QString("Operation timed out: did not receive result or error code within timeout(%1)").arg(m_opTimeout.interval());
+    emit errorMessage(msg);
+    m_operation = operation::NONE;
   }
 
   qint64 MbedHostTestRunner::sendString(const QByteArray &str)
@@ -221,7 +250,7 @@ namespace worlddirect {
             return;
           }
         m_syncTimeout.stop();
-        emit successMessage("New Host Test Run");
+        emit syncSuccessMessage("New Host Test Run");
         emit syncReceived(uuid);
         newSyncReceived(uuid);
         return;
@@ -405,6 +434,20 @@ namespace worlddirect {
         emit firmwareStarted();
       }
 
+    // {{__op_result;Ergebnis}}
+    if(key.compare(WD_TEST_ENV_OP_RESULT) == 0)
+      {
+       handleOperationResult(m_operation, val[0]);
+       m_operation = operation::NONE;
+      }
+
+    // {{__op_error;NotFound}}
+    if(key.compare(WD_TEST_ENV_OP_ERROR) == 0)
+      {
+       handleOperationError(m_operation, val[0]);
+    m_operation = operation::NONE;
+      }
+
 
     emit kvReceived(key, val);
   }
@@ -507,8 +550,65 @@ namespace worlddirect {
       case QSerialPort::UnsupportedOperationError: return "The requested device operation is not supported or prohibited by the running operating system.";
       case QSerialPort::TimeoutError: return "A timeout error occurred. This value was introduced in QtSerialPort 5.2.";
       default: return "An unidentified error occurred.";
-      }
+    }
   }
 
+  void MbedHostTestRunner::handleOperationResult(MbedHostTestRunner::operation op, const QByteArray &result)
+  {
+      switch (op) {
+      case operation::ICCID_GET:{
+          QString iccId(result);
+          emit iccIdReceived(iccId);
+          break;
+      }
+      default:{
+              auto msg = QString("Unknown operation");
+              emit errorMessage(msg);
+          break;}
+      }
+
+  }
+
+  void MbedHostTestRunner::handleOperationError(MbedHostTestRunner::operation op, const QByteArray &error)
+  {
+      switch (op) {
+      case operation::ICCID_GET:{
+          bool ok = false;
+          auto error_code = error.toInt(&ok);
+          if(ok == false){
+              auto msg = QString("Operation returned Error: Unknown error code");
+              emit errorMessage(msg);
+          }
+          switch (error_code) {
+          case -1: {
+              auto msg = QString("Operation returned Error: Undefined Error");
+              emit errorMessage(msg);
+              break;
+          }
+          case -2: {
+              auto msg = QString("Operation returned Error: Cellular Interface not Responding");
+              emit errorMessage(msg);
+              break;
+          }
+          case -3: {
+              auto msg = QString("Operation returned Error: Can not read iccid");
+              emit errorMessage(msg);
+              break;
+          }
+          default:{
+              auto msg = QString("Operation returned Error: Unknown error code");
+              emit errorMessage(msg);
+              break;}
+          }
+          break;
+      }
+      default:{
+              auto msg = QString("Unknown operation");
+              emit errorMessage(msg);
+          break;
+      }
+      }
+
+  }
 
 }

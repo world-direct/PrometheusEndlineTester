@@ -31,15 +31,24 @@ namespace worlddirect {
 
   bool DeviceInformation::valid() const
   {
+      if(complete() == false){
+          return false;
+      }
+
+    if(iccId().isEmpty()){
+        return false;
+      }
+
+    return  true;
+  }
+
+  bool DeviceInformation::complete() const
+  {
     if(type().isEmpty()){
         return false;
       }
 
     if(endpointName().isEmpty()){
-        return false;
-      }
-
-    if(iccId().isEmpty()){
         return false;
       }
 
@@ -71,6 +80,9 @@ namespace worlddirect {
         m_type = ty;
         emit typeChanged(m_type);
       }
+    if(complete()){
+        emit baseInformationComplete();
+    }
   }
 
   QString DeviceInformation::hardwareVersion() const
@@ -84,6 +96,9 @@ namespace worlddirect {
         m_hardwareVersion = hwVersion;
         emit hardwareVersionChanged(m_hardwareVersion);
       }
+    if(complete()){
+        emit baseInformationComplete();
+    }
   }
 
   QString DeviceInformation::endpointName() const
@@ -97,6 +112,9 @@ namespace worlddirect {
         m_endpointName = epName;
         emit endpointNameChanged(m_endpointName);
       }
+    if(complete()){
+        emit baseInformationComplete();
+    }
   }
 
   QString DeviceInformation::iccId() const
@@ -124,6 +142,10 @@ namespace worlddirect {
         m_iccId = icc;
         emit iccIdChanged(m_iccId);
       }
+
+    if(valid()){
+        emit deviceInformationValid();
+    }
   }
 
   void DeviceInformation::setPSK(const QVector<quint8> &key)

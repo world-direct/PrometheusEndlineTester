@@ -11,10 +11,12 @@ namespace worlddirect {
   class MbedHostTestRunner;
   class DeviceProvisioning;
   class DeviceInformation;
+  class HostTests;
 
   class StateMachine : public QStateMachine
   {
     Q_OBJECT
+
   public:
     explicit StateMachine(QObject* parent = Q_NULLPTR);
     StateMachine ( const  StateMachine& ) = delete;
@@ -29,6 +31,9 @@ namespace worlddirect {
 
   public slots:
     void successMessage(const QString& msg);
+    void resetSuccessMessage(const QString& msg);
+    void connectSuccessMessage(const QString& msg);
+    void syncSuccessMessage(const QString& msg);
     void errrorMessage(const QString& msg);
 
   signals:
@@ -36,6 +41,9 @@ namespace worlddirect {
     void clearScreen();
 
     void success();
+    void resetSuccess();
+    void connectSuccess();
+    void syncSuccess();
     void error();
     void again();
     void retry();
@@ -48,6 +56,9 @@ namespace worlddirect {
     void resetTarget();
     void connectSerial();
     void sendSync();
+    void selectEndlineTest();
+    void selectDeviceProvisioning();
+    void readIccid();
     //void hostTestFinished();
     void programFirmware();
     void registerDevice();
@@ -66,6 +77,7 @@ namespace worlddirect {
     MbedHostTestRunner *m_htrun;
     DeviceProvisioning * m_provisioning;
     DeviceInformation* m_deviceInformation;
+    HostTests* m_hosttests;
     bool m_autorun;
   };
 

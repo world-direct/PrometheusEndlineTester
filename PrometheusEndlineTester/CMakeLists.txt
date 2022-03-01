@@ -42,12 +42,15 @@ add_executable(PrometheusEndlineTester
     stlink/stlinkdeviceflasher.cpp
     htrun/mbedhosttestrunner.cpp
     statemachine/statemachine.cpp
+    host_tests/hosttests.cpp
     ui/widgets/testexplorer.cpp
     ui/mainwindow.cpp
     ui/dialogs/settingsdialog.cpp
     ui/widgets/console.cpp
     ui/widgets/qrwidget.cpp
     ui/widgets/nameplatewidget.cpp
+    ui/widgets/prometheusnameplatewidget.cpp
+    ui/widgets/gatewaynameplatewidget.cpp
     PrometheusEndlineTester.qrc
     ui/model/testcasesumarymodel.cpp
     ui/model/hosttestrun.cpp

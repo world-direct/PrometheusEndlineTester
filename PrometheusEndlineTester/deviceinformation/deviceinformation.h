@@ -28,6 +28,8 @@ namespace worlddirect {
     void hardwareVersionChanged(const QString &hwVersion);
     void endpointNameChanged(const QString& epName);
     void iccIdChanged(const QString icc);
+    void baseInformationComplete();
+    void deviceInformationValid();
 
   public slots:
     void setType(const QString &ty);
@@ -39,6 +41,7 @@ namespace worlddirect {
   public:
     void clear();
     bool valid()const;
+    bool complete() const;
 
     QUuid uuid() const;
     QString testRun() const;

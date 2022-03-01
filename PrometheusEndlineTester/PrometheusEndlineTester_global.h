@@ -20,6 +20,7 @@ constexpr const char* KEY_SERIAL_STOP = "serial/stop";
 constexpr const char* KEY_SERIAL_PARITY = "serial/parity";
 constexpr const char* KEY_SERIAL_FLOWCTRL = "serial/flowctrl";
 constexpr const char* KEY_SERIAL_SYNC_TIMEOUT = "serial/sync_timeout";
+constexpr const char* KEY_SERIAL_OP_TIMEOUT = "serial/op_timeout";
 
 constexpr const char* KEY_IDENTITY_SERVER = "identity/server";
 constexpr const char* KEY_IDENTITY_CLIENT = "identity/client";
@@ -44,6 +45,15 @@ constexpr const char* GREENTEA_TEST_ENV_TESTCASE_START = "__testcase_start";
 constexpr const char* GREENTEA_TEST_ENV_TESTCASE_FINISH = "__testcase_finish";
 constexpr const char* GREENTEA_TEST_ENV_TESTCASE_SUMMARY = "__testcase_summary";
 constexpr const char* GREENTEA_TEST_ENV_LCOV_START = "__coverage_start";
+
+constexpr const char* WD_TEST_ENV_SELECT = "__select";
+constexpr const char* WD_TEST_ENV_ENDLINE_TEST = "endlinetest";
+constexpr const char* WD_TEST_ENV_PROVISIONING = "provisioning";
+
+constexpr const char* WD_TEST_ENV_OP = "__op";
+constexpr const char* WD_TEST_ENV_OP_ICCID_GET = "iccid_get";
+constexpr const char* WD_TEST_ENV_OP_ERROR = "__op_error";
+constexpr const char* WD_TEST_ENV_OP_RESULT = "__op_result";
 
 constexpr const char* GREENTEA_TEST_ENV_SUCCESS = "success";
 constexpr const char* GREENTEA_TEST_ENV_FAILURE = "failure";

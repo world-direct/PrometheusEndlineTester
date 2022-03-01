@@ -11,7 +11,7 @@ namespace worlddirect {
   {
     Q_OBJECT
   private:
-    enum class Mode{NONE, CONNECT, PROGRAM, RESET};
+    enum class Mode{NONE, CONNECT, PROGRAM, RESET, CLEAR_PROTECTION};
 
   public:
     enum class BinaryType{NONE, TEST, FIRMWARE};
@@ -29,11 +29,14 @@ namespace worlddirect {
     void newLineReceived(const QByteArray &dt);
 
     void successMessage(const QString& msg);
+    void connectSuccessMessage(const QString& msg);
+    void resetSuccessMessage(const QString& msg);
     void errorMessage(const QString& msg);
 
     void targetConnected();
     void targetProgrammed();
     void targetReset();
+    void targetWritProtectionCleared();
 
   public slots:
     //void newHostTestRun(const QString& hostTestRun);

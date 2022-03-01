@@ -37,6 +37,10 @@ include("strict_compile_flags.cmake")
 add_subdirectory(DeviceProvisioningAPI)
 #########################################
 
+#########################################
+## DeviceProvisioningAPI
+add_subdirectory(SerialEchoServer)
+#########################################
 
 #########################################
 ## PrometheusEndlineTester

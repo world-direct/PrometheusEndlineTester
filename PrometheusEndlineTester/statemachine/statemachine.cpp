@@ -7,6 +7,7 @@
 #include <deviceinformation/deviceinformation.h>
 #include <htrun/mbedhosttestrunner.h>
 #include <provisioning/deviceprovisioning.h>
+#include "host_tests/hosttests.h"
 
 namespace worlddirect {
 
@@ -17,6 +18,7 @@ namespace worlddirect {
       m_htrun(new MbedHostTestRunner()),
       m_provisioning(new DeviceProvisioning()),
       m_deviceInformation(new DeviceInformation()),
+      m_hosttests(new HostTests()),
       m_autorun(true)
   {
     connect(this, &StateMachine::printData,                     m_ui, &MainWindow::printData);
@@ -37,6 +39,25 @@ namespace worlddirect {
         m_htrun->serialSendSyncUuid(uuid);
       }
     );
+    connect(
+          this, &StateMachine::selectEndlineTest,
+          [this](){
+        m_htrun->serialSelectEndlineTest();
+      }
+    );
+    connect(
+          this, &StateMachine::selectDeviceProvisioning,
+          [this](){
+        m_htrun->serialSelectProvisioning();
+      }
+    );
+    connect(
+          this, &StateMachine::readIccid,
+          [this](){
+        m_htrun->serialReadIccid();
+      }
+    );
+
     connect(this, &StateMachine::programFirmware,           m_stflash, &StLinkDeviceFlasher::programTargetFirmware);
     connect(
           this, &StateMachine::registerDevice,
@@ -94,6 +115,7 @@ namespace worlddirect {
           this, &StateMachine::newTarget,
           [this](){
         m_autorun = false;
+        m_hosttests->killall();
       }
     );
     connect(
@@ -133,11 +155,14 @@ namespace worlddirect {
     connect(m_stflash, &StLinkDeviceFlasher::newLineReceived,   this, &StateMachine::printData);
     connect(m_stflash, &StLinkDeviceFlasher::printData,         this, &StateMachine::printData);
     connect(m_stflash, &StLinkDeviceFlasher::successMessage,    this, & StateMachine::successMessage);
+    connect(m_stflash, &StLinkDeviceFlasher::connectSuccessMessage,    this, & StateMachine::connectSuccessMessage);
+    connect(m_stflash, &StLinkDeviceFlasher::resetSuccessMessage,    this, & StateMachine::resetSuccessMessage);
     connect(m_stflash, &StLinkDeviceFlasher::errorMessage,      this, & StateMachine::errrorMessage);
 
     connect(m_htrun, &MbedHostTestRunner::newLineReceived,      this, &StateMachine::printData);
     connect(m_htrun, &MbedHostTestRunner::printData,            this, &StateMachine::printData);
     connect(m_htrun, &MbedHostTestRunner::successMessage,       this, & StateMachine::successMessage);
+    connect(m_htrun, &MbedHostTestRunner::syncSuccessMessage,       this, & StateMachine::syncSuccessMessage);
     connect(m_htrun, &MbedHostTestRunner::errorMessage,         this, & StateMachine::errrorMessage);
     connect(m_htrun, &MbedHostTestRunner::newHostTestRun,       m_ui, &MainWindow::newHostTestRun);
     connect(m_htrun, &MbedHostTestRunner::newHostTest,          m_ui, &MainWindow::newHostTest);
@@ -155,16 +180,19 @@ namespace worlddirect {
     connect(m_htrun, &MbedHostTestRunner::iccIdReceived,                m_deviceInformation, &DeviceInformation::setIccId);
     connect(m_htrun, &MbedHostTestRunner::firmwareStarted,        this, &StateMachine::success);
 
-
     connect(m_deviceInformation, &DeviceInformation::typeChanged,        m_ui, &MainWindow::typeReceived);
     connect(m_deviceInformation, &DeviceInformation::hardwareVersionChanged,        m_ui, &MainWindow::hardwareVersionReceived);
     connect(m_deviceInformation, &DeviceInformation::endpointNameChanged    ,        m_ui, &MainWindow::endpointNameReceived);
     connect(m_deviceInformation, &DeviceInformation::iccIdChanged,        m_ui, &MainWindow::iccIdReceived);
+    connect(m_deviceInformation, &DeviceInformation::baseInformationComplete,        this, &StateMachine::success);
+    connect(m_deviceInformation, &DeviceInformation::deviceInformationValid,        this, &StateMachine::success);
 
     connect(m_provisioning, &DeviceProvisioning::printData,         this, &StateMachine::printData);
     connect(m_provisioning, &DeviceProvisioning::successMessage,    this, & StateMachine::successMessage);
     connect(m_provisioning, &DeviceProvisioning::errorMessage,      this, & StateMachine::errrorMessage);
     connect(m_provisioning, &DeviceProvisioning::pskReceived,       m_deviceInformation, &DeviceInformation::setPSK);
+
+    connect(m_htrun, &MbedHostTestRunner::newTestCase,          m_hosttests, &HostTests::newTestCase);
 
     createStates();
   }
@@ -285,6 +313,37 @@ namespace worlddirect {
           targetTestRunning, &QState::entered,
           [this]() {
         emit printData("===Target Test Running===");
+        if(m_autorun){
+            //emit sendSync();
+            QTimer::singleShot(1000, this, &StateMachine::selectEndlineTest);
+          }
+      }
+    );
+
+
+    QState* noTargetBaseInformation = new QState();
+    noTargetBaseInformation->setObjectName(tr("noTargetBaseInformation"));
+    connect(
+          noTargetBaseInformation, &QState::entered,
+          [this]() {
+        emit printData("===Reading Target Base Information===");
+        if(m_autorun){
+            QTimer::singleShot(1000, this, &StateMachine::resetTarget);
+            QTimer::singleShot(2000, this, &StateMachine::sendSync);
+            QTimer::singleShot(3000, this, &StateMachine::selectDeviceProvisioning);
+          }
+      }
+    );
+
+    QState*  noTargetIccId= new QState();
+    noTargetIccId->setObjectName(tr("noTargetIccId"));
+    connect(
+          noTargetIccId, &QState::entered,
+          [this]() {
+        emit printData("===Reading Target ICCID===");
+        if(m_autorun){
+            QTimer::singleShot(1000, this, &StateMachine::readIccid);
+          }
       }
     );
 
@@ -296,7 +355,9 @@ namespace worlddirect {
         emit printData("===Target Tested===");
         if(m_autorun){
             //emit programFirmware();
-            QTimer::singleShot(1000, this, &StateMachine::programFirmware);
+            // QTimer::singleShot(1000, this, &StateMachine::resetTarget);
+            QTimer::singleShot(1000, this, &StateMachine::conncectProgrammer);
+            QTimer::singleShot(10000, this, &StateMachine::programFirmware);
           }
       }
     );
@@ -405,6 +466,7 @@ namespace worlddirect {
     firmwareDownloaded->addTransition(this, &StateMachine::newTarget, ready);
 
     ready->addTransition(this, &StateMachine::success, targetConnected);
+    ready->addTransition(this, &StateMachine::connectSuccess, targetConnected);
     ready->addTransition(this, &StateMachine::error, ready);
     ready->addTransition(this, &StateMachine::again, ready);
     ready->addTransition(this, &StateMachine::newTarget, ready);
@@ -415,6 +477,7 @@ namespace worlddirect {
     targetConnected->addTransition(this, &StateMachine::newTarget, ready);
 
     targetTestProgrammed->addTransition(this, &StateMachine::success, targetTestReady);
+    targetTestProgrammed->addTransition(this, &StateMachine::resetSuccess, targetTestReady);
     targetTestProgrammed->addTransition(this, &StateMachine::error, targetTestProgrammed);
     targetTestProgrammed->addTransition(this, &StateMachine::again, targetTestProgrammed);
     targetTestProgrammed->addTransition(this, &StateMachine::newTarget, ready);
@@ -425,14 +488,25 @@ namespace worlddirect {
     targetTestReady->addTransition(this, &StateMachine::newTarget, ready);
 
     serialConnected->addTransition(this, &StateMachine::success, targetTestRunning);
+    serialConnected->addTransition(this, &StateMachine::syncSuccess, targetTestRunning);
     serialConnected->addTransition(this, &StateMachine::error, serialConnected);
     serialConnected->addTransition(this, &StateMachine::again, serialConnected);
     serialConnected->addTransition(this, &StateMachine::newTarget, ready);
 
-    targetTestRunning->addTransition(this, &StateMachine::success, targetTested);
+    targetTestRunning->addTransition(this, &StateMachine::success, noTargetBaseInformation);
     targetTestRunning->addTransition(this, &StateMachine::error, targetTestRunning);
     targetTestRunning->addTransition(this, &StateMachine::again, targetTestRunning);
     targetTestRunning->addTransition(this, &StateMachine::newTarget, ready);
+
+    noTargetBaseInformation->addTransition(this, &StateMachine::success, noTargetIccId);
+    noTargetBaseInformation->addTransition(this, &StateMachine::error, noTargetBaseInformation);
+    noTargetBaseInformation->addTransition(this, &StateMachine::again, noTargetBaseInformation);
+    noTargetBaseInformation->addTransition(this, &StateMachine::newTarget, ready);
+
+    noTargetIccId->addTransition(this, &StateMachine::success, targetTested);
+    noTargetIccId->addTransition(this, &StateMachine::error, noTargetIccId);
+    noTargetIccId->addTransition(this, &StateMachine::again, noTargetIccId);
+    noTargetIccId->addTransition(this, &StateMachine::newTarget, ready);
 
     targetTested->addTransition(this, &StateMachine::success, targetNotRegistered);
     targetTested->addTransition(this, &StateMachine::error, targetTested);
@@ -450,11 +524,13 @@ namespace worlddirect {
     targetNotPorvisioned->addTransition(this, &StateMachine::newTarget, ready);
 
     pskReceived->addTransition(this, &StateMachine::success, pskVerified);
+    pskReceived->addTransition(this, &StateMachine::resetSuccess, pskVerified);
     pskReceived->addTransition(this, &StateMachine::error, pskReceived);
     pskReceived->addTransition(this, &StateMachine::again, pskReceived);
     pskReceived->addTransition(this, &StateMachine::newTarget, ready);
 
     pskVerified->addTransition(this, &StateMachine::success, targetFirmwareReady);
+    pskVerified->addTransition(this, &StateMachine::resetSuccess, targetFirmwareReady);
     pskVerified->addTransition(this, &StateMachine::error, pskVerified);
     pskVerified->addTransition(this, &StateMachine::again, pskVerified);
     pskVerified->addTransition(this, &StateMachine::newTarget, ready);
@@ -483,6 +559,8 @@ namespace worlddirect {
     this->addState(targetTestReady);
     this->addState(serialConnected);
     this->addState(targetTestRunning);
+    this->addState(noTargetBaseInformation);
+    this->addState(noTargetIccId);
     this->addState(targetTested);
     this->addState(targetNotRegistered);
     this->addState(targetNotPorvisioned);
@@ -502,6 +580,30 @@ namespace worlddirect {
     printData(msg.toLocal8Bit());
     //emit success();
     QTimer::singleShot(100, this, &StateMachine::success);
+
+  }
+
+  void StateMachine::resetSuccessMessage(const QString &msg)
+  {
+    emit clearScreen();
+    printData(msg.toLocal8Bit());
+    //emit success();
+    QTimer::singleShot(100, this, &StateMachine::resetSuccess);
+  }
+
+  void StateMachine::connectSuccessMessage(const QString &msg)
+  {
+    emit clearScreen();
+    printData(msg.toLocal8Bit());
+    QTimer::singleShot(100, this, &StateMachine::connectSuccess);
+  }
+
+  void StateMachine::syncSuccessMessage(const QString &msg)
+  {
+    emit clearScreen();
+    printData(msg.toLocal8Bit());
+    //emit success();
+    QTimer::singleShot(100, this, &StateMachine::syncSuccess);
 
   }
 

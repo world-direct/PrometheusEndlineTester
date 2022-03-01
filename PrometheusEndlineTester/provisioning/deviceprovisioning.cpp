@@ -60,27 +60,27 @@ namespace worlddirect {
     emit printData("Downloading latest Firmware...");
     auto thread = QThread::create(
           [this]{
-//        QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
-//        auto server = settings.value(KEY_PROVISIONING_SERVER).toString().toStdString();
-//        auto path = settings.value(KEY_FLASHER_PATHTOFW).toString().toStdString();
-//        auto name = settings.value(KEY_PROVISIONING_NAME).toString().toStdString();
-//        auto token = m_token.toStdString();
+        QSettings settings(SETT_FILE_NAME, QSettings::IniFormat);
+        auto server = settings.value(KEY_PROVISIONING_SERVER).toString().toStdString();
+        auto path = settings.value(KEY_FLASHER_PATHTOFW).toString().toStdString();
+        auto name = settings.value(KEY_PROVISIONING_NAME).toString().toStdString();
+        auto token = m_token.toStdString();
 
-//        worlddirect::DeviceProvisioningAPIClient cli(server);
+        worlddirect::DeviceProvisioningAPIClient cli(server);
 
-//        cli.SetAccessToken(token);
-//        if(cli.hadError()){
-//            auto errmsg = QString::fromStdString(cli.errorMessage());
-//            emit errorMessage(errmsg);
-//            return;
-//          }
+        cli.SetAccessToken(token);
+        if(cli.hadError()){
+            auto errmsg = QString::fromStdString(cli.errorMessage());
+            emit errorMessage(errmsg);
+            return;
+          }
 
-//        cli.RegistartionDownloadFirmwareGet(name, path);
-//        if(cli.hadError()){
-//            auto errmsg = QString::fromStdString(cli.errorMessage());
-//            emit errorMessage(errmsg);
-//            return;
-//          }
+        cli.RegistartionDownloadFirmwareGet(name, path);
+        if(cli.hadError()){
+            auto errmsg = QString::fromStdString(cli.errorMessage());
+            emit errorMessage(errmsg);
+            return;
+          }
 
         emit successMessage("latest Firmware successfully downloaded");
       }

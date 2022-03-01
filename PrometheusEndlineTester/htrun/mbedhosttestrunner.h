@@ -13,11 +13,13 @@ namespace worlddirect {
   class MbedHostTestRunner : public QSerialPort
   {
     Q_OBJECT
+  private:
+    enum class operation{NONE, ICCID_GET};
+
   public:
     explicit MbedHostTestRunner(QObject *parent = Q_NULLPTR);
     MbedHostTestRunner&  operator= ( const  MbedHostTestRunner& ) = delete;
     MbedHostTestRunner&  operator= ( const  MbedHostTestRunner&& ) = delete;
-
     MbedHostTestRunner ( const  MbedHostTestRunner& ) = delete;
     MbedHostTestRunner ( const  MbedHostTestRunner&& ) = delete;
 
@@ -62,6 +64,7 @@ namespace worlddirect {
     void failedHostTestRun(const QString& hostTestRun);
 
     void successMessage(const QString& msg);
+    void syncSuccessMessage(const QString& msg);
     void errorMessage(const QString& msg);
 
     void firmwareStarted();
@@ -71,18 +74,26 @@ namespace worlddirect {
     void serialSendSync();
     void serialSendSyncUuid(const QUuid &uuid);
 
+    void serialSelectEndlineTest();
+    void serialSelectProvisioning();
+
+    void serialReadIccid();
+
     void sendPSK(const QVector<quint8>& key);
 
   private slots:
     void readSerialData();
     void parseNewLine(const QByteArray &dt);
     void syncTimedOut();
+    void opTimedOut();
 
   private:
     qint64 sendKv(const QByteArray &key, const QByteArray &val);
     qint64 sendString(const QByteArray& str);
     qint64 sendSync(const QUuid &uuid);
     qint64 sendSync(const QByteArray &uuid);
+
+    // qint64 sendOperation();
 
     void parseMsg(const QByteArray& line);
     void parseKv(const QByteArray& line);
@@ -100,10 +111,15 @@ namespace worlddirect {
 
     QString errorCode2Msg()const;
 
+    void handleOperationResult(operation op, const QByteArray& result);
+    void handleOperationError(operation op, const QByteArray& error);
+
   private:
     QString m_testRun;
     QString m_hostTest;
     QTimer m_syncTimeout;
+    QTimer m_opTimeout;
+    operation m_operation;
 
   };
 
